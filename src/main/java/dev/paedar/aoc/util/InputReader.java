@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.nio.file.Files.readAllLines;
@@ -27,7 +26,7 @@ public class InputReader {
 
     public static List<String> readTokens(String inputFilename) {
         var content = readContent(inputFilename);
-        return Arrays.asList(content.split("\\W+"));
+        return Util.splitToTokens(content);
     }
 
     public static String readContent(String inputFilename) {
