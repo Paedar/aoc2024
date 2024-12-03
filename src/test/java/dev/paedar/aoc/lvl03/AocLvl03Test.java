@@ -26,4 +26,24 @@ class AocLvl03Test {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    void sumEnabledMultiplicationsExample() {
+        var content = InputReader.readContent("example_03_B.txt");
+
+        var expected = 48;
+        var actual = AocLvl03.sumEnabledMultiplications(content);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void sumEnabledMultiplicationsInput() {
+        var content = InputReader.readContent("input_03.txt");
+
+        var expected = 88811886;
+        var actual = AocLvl03.sumEnabledMultiplications(content);
+
+        assertEquals(expected, actual);
+    }
 }
