@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.groupingBy;
 public class AocLvl01 {
 
     public static void main(String[] args) {
-        var tokens = InputReader.readTokens("lvl_01/input.txt");
+        var tokens = InputReader.readTokens("input_01.txt");
 
         var leftList = sortedAsInteger(takeColumn(tokens, 0, 2));
         var rightList = sortedAsInteger(takeColumn(tokens, 1, 2));

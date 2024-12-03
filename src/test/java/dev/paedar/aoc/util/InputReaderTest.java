@@ -16,10 +16,9 @@ class InputReaderTest {
                        2   5
                        1   3
                        3   9
-                       3   3
-                       """;
+                       3   3""";
 
-        var actual = InputReader.readContent("example.txt");
+        var actual = InputReader.readContent("example_01.txt");
 
         assertEquals(expected, actual);
     }
@@ -33,7 +32,7 @@ class InputReaderTest {
                                "3   9",
                                "3   3");
 
-        var actual = InputReader.readLines("example.txt");
+        var actual = InputReader.readLines("example_01.txt");
 
         assertEquals(expected, actual);
     }
@@ -47,7 +46,7 @@ class InputReaderTest {
                                "3", "9",
                                "3", "3");
 
-        var actual = InputReader.readTokens("example.txt");
+        var actual = InputReader.readTokens("example_01.txt");
 
         assertEquals(expected, actual);
     }
