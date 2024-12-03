@@ -17,11 +17,30 @@ class AocLvl02Test {
         var actual = AocLvl02.countSafeReports(levelsReport);
         assertEquals(expected, actual);
     }
+    @Test
+    void countSafeReportsInput() {
+        var expected = 432;
+        var lines = InputReader.readLines("input_02.txt");
+        var levelsReport = toReports(lines);
+
+        var actual = AocLvl02.countSafeReports(levelsReport);
+        assertEquals(expected, actual);
+    }
 
     @Test
     void countSafeDampenedReportsExample() {
         var expected = 4;
         var lines = InputReader.readLines("example_02.txt");
+        var levelsReport = toReports(lines);
+
+        var actual = AocLvl02.countSafeDampenedReports(levelsReport);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void countSafeDampenedReportsInput() {
+        var expected = 488;
+        var lines = InputReader.readLines("input_02.txt");
         var levelsReport = toReports(lines);
 
         var actual = AocLvl02.countSafeDampenedReports(levelsReport);

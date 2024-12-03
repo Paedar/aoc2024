@@ -13,8 +13,20 @@ class AocLvl01Test {
     void testExampleDistance() {
         var expected = 11;
 
-        var tokens = InputReader.readTokens("" +
-                                                    "example_01.txt");
+        var tokens = InputReader.readTokens("example_01.txt");
+
+        var leftList = sortedAsInteger(takeColumn(tokens, 0, 2));
+        var rightList = sortedAsInteger(takeColumn(tokens, 1, 2));
+
+        var actual = AocLvl01.columnDistance(leftList, rightList);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testInputDistance() {
+        var expected = 1834060;
+
+        var tokens = InputReader.readTokens("input_01.txt");
 
         var leftList = sortedAsInteger(takeColumn(tokens, 0, 2));
         var rightList = sortedAsInteger(takeColumn(tokens, 1, 2));
@@ -27,8 +39,20 @@ class AocLvl01Test {
     void testExampleSimilarity() {
         var expected = 31;
 
-        var tokens = InputReader.readTokens("" +
-                                                    "example_01.txt");
+        var tokens = InputReader.readTokens("example_01.txt");
+
+        var leftList = sortedAsInteger(takeColumn(tokens, 0, 2));
+        var rightList = sortedAsInteger(takeColumn(tokens, 1, 2));
+
+        var actual = AocLvl01.columnSimilarity(leftList, rightList);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testInputSimilarity() {
+        var expected = 21607792;
+
+        var tokens = InputReader.readTokens("input_01.txt");
 
         var leftList = sortedAsInteger(takeColumn(tokens, 0, 2));
         var rightList = sortedAsInteger(takeColumn(tokens, 1, 2));
