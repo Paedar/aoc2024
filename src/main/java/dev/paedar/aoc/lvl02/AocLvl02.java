@@ -3,8 +3,11 @@ package dev.paedar.aoc.lvl02;
 import dev.paedar.aoc.util.InputReader;
 import dev.paedar.aoc.util.Util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Gatherers;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class AocLvl02 {
 
@@ -13,7 +16,10 @@ public class AocLvl02 {
         var levelsReport = toReports(lines);
 
         var safeReports = countSafeReports(levelsReport);
-        System.out.println(safeReports);
+        System.out.println("Safe reports: " + safeReports);
+
+        var safeDampenedReports = countSafeDampenedReports(levelsReport);
+        System.out.println("Safe reports after dampening: " + safeDampenedReports);
     }
 
     public static List<List<Integer>> toReports(List<String> lines) {
@@ -29,6 +35,29 @@ public class AocLvl02 {
         return levelsReport.stream()
                            .filter(AocLvl02::isSafeReport)
                            .count();
+    }
+
+    public static long countSafeDampenedReports(List<List<Integer>> levelsReport) {
+        return levelsReport.stream()
+                           .filter(AocLvl02::isSafeDampenedReport)
+                           .count();
+    }
+
+    private static boolean isSafeDampenedReport(List<Integer> report) {
+        if (isSafeReport(report)) {
+            return true;
+        }
+        return allDampenedReports(report)
+                       .anyMatch(AocLvl02::isSafeReport);
+    }
+
+    private static Stream<List<Integer>> allDampenedReports(List<Integer> report) {
+        return IntStream.range(0, report.size())
+                        .mapToObj(i -> {
+                            var copy = new ArrayList<>(report);
+                            copy.remove(i);
+                            return copy;
+                        });
     }
 
     public static boolean isSafeReport(List<Integer> report) {

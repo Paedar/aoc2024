@@ -18,4 +18,14 @@ class AocLvl02Test {
         assertEquals(expected, actual);
     }
 
+    @Test
+    void countSafeDampenedReportsExample() {
+        var expected = 4;
+        var lines = InputReader.readLines("example_02.txt");
+        var levelsReport = toReports(lines);
+
+        var actual = AocLvl02.countSafeDampenedReports(levelsReport);
+        assertEquals(expected, actual);
+    }
+
 }
