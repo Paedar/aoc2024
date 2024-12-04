@@ -27,7 +27,7 @@ public record TakeNthGatherer(int numCols, int colNum) implements Gatherer<Strin
         return Counter::new;
     }
 
-    static class Counter {
+    public static class Counter {
 
         public Counter() {
             this(0);
