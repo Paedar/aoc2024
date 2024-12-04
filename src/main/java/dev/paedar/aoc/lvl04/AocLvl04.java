@@ -52,11 +52,11 @@ public class AocLvl04 {
                                    .count();
     }
 
-    public static int countWords(String wordToFind, List<String> lines) {
+    public static long countWords(String wordToFind, List<String> lines) {
         var gridInfo = getGridInfo(wordToFind, lines);
 
         return Stream.of(Direction.values())
-                     .mapToInt(direction -> countWordsInDirection(wordToFind, direction, gridInfo))
+                     .mapToLong(direction -> countWordsInDirection(wordToFind, direction, gridInfo))
                      .sum();
     }
 
@@ -70,7 +70,7 @@ public class AocLvl04 {
         var allPositions = allGridPositions(height, width);
         var characterPositions = getCharacterPositions(wordToFind, lines, allPositions);
 
-        return new GridInfo(allPositions, characterPositions, height, width);
+        return new GridInfo(lines, characterPositions, height, width);
     }
 
     private static Map<Character, Set<Position>> getCharacterPositions(String wordToFind, List<String> lines, Set<Position> allPositions) {
@@ -90,22 +90,15 @@ public class AocLvl04 {
                         .collect(Collectors.toSet());
     }
 
-    private static int countWordsInDirection(String wordToFind, Direction direction, GridInfo gridInfo) {
+    private static long countWordsInDirection(String wordToFind, Direction direction, GridInfo gridInfo) {
+        var wordLength = wordToFind.length();
         var characterPositions = gridInfo.characterPositions();
         var nextPositions = characterPositions.get(wordToFind.charAt(0));
 
-        for (int i = 1; i < wordToFind.length(); i++) {
-            var nextCharacter = wordToFind.charAt(i);
-            var nextCharacterPositions = characterPositions.get(nextCharacter);
-            nextPositions = nextPositions.stream()
-                                         .map(direction::next)
-                                         .filter(p -> p.x() >= 0 && p.x() < gridInfo.width())  // Technically not necessary due to filter on nextCharacterPositions
-                                         .filter(p -> p.y() >= 0 && p.y() < gridInfo.height()) // Technically not necessary due to filter on nextCharacterPositions
-                                         .filter(nextCharacterPositions::contains)
-                                         .collect(Collectors.toSet());
-        }
-
-        return nextPositions.size();
+        return nextPositions.stream()
+                            .map(p -> wordAt(gridInfo.lines(), p, direction, wordLength))
+                            .filter(wordToFind::equals)
+                            .count();
     }
 
     private static Set<Position> characterPositions(char character, List<String> lines, Set<Position> allPositions) {
