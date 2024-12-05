@@ -57,9 +57,7 @@ public class AocLvl05 {
         uniquely definable solution to this problem either. Let's assume this is not the case.
          */
         var corrected = new ArrayList<>(printRun);
-        var violations = applicableRules.stream()
-                                        .filter(rule -> !rule.validateOn(corrected))
-                                        .toList();
+        var violations = determineViolations(applicableRules, corrected);
         while (!violations.isEmpty()) {
             /*
             Note: it is unclear whether or not performing the swaps of all current violations is faster than simply applying a single swap.
@@ -75,12 +73,16 @@ public class AocLvl05 {
             /*
             We do determine all violations again repeatedly. Our swap could have violated rules that weren't violated before!
              */
-            violations = applicableRules.stream()
-                                        .filter(rule -> !rule.validateOn(corrected))
-                                        .toList();
+            violations = determineViolations(applicableRules, corrected);
         }
 
         return corrected;
+    }
+
+    private static List<Rule> determineViolations(Set<Rule> applicableRules, ArrayList<Integer> printRun) {
+        return applicableRules.stream()
+                              .filter(rule -> !rule.validateOn(printRun))
+                              .toList();
     }
 
     public static int sumMiddlePageNumberOfCorrectPrintRuns(Set<Rule> rules, Set<List<Integer>> printRuns) {
