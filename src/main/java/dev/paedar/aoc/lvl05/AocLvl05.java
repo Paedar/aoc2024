@@ -2,8 +2,11 @@ package dev.paedar.aoc.lvl05;
 
 import dev.paedar.aoc.util.InputReader;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,6 +19,79 @@ public class AocLvl05 {
 
         var middlePageOfCorrectPrintRunsSum = sumMiddlePageNumberOfCorrectPrintRuns(rules, printRuns);
         System.out.println("Sum of middle pages of correct print runs: " + middlePageOfCorrectPrintRunsSum);
+
+        var middlePageOfCorrectedPrintRunsSum = sumMiddlePageNumberOfCorrectedPrintRuns(rules, printRuns);
+        System.out.println("Sum of middle pages of corrected print runs: " + middlePageOfCorrectedPrintRunsSum);
+    }
+
+    public static int sumMiddlePageNumberOfCorrectedPrintRuns(Set<Rule> rules, Set<List<Integer>> printRuns) {
+        return printRuns.stream()
+                        .filter(it -> !isValidPrintRun(it, rules))
+                        .map(it -> correctAccordingTo(it, rules))
+                        .mapToInt(AocLvl05::toMiddlePage)
+                        .sum();
+    }
+
+    private static List<Integer> correctAccordingTo(List<Integer> printRun, Set<Rule> rules) {
+        var applicableRules = rules.stream()
+                                   .filter(rule -> rule.appliesTo(printRun))
+                                   .collect(Collectors.toUnmodifiableSet());
+
+        /*
+        Let's assert that the print run is actually uniquely correctable.
+         */
+        var sortedNumbersInRules = applicableRules.stream()
+                                                  .flatMap(it -> Stream.of(it.first(), it.second()))
+                                                  .distinct()
+                                                  .sorted()
+                                                  .toList();
+
+        if (!sortedNumbersInRules.equals(printRun.stream().sorted().toList())) {
+            throw new IllegalArgumentException("I don't think there's a correct solution to this problem.");
+        }
+
+        var corrected = new ArrayList<Integer>();
+        var stack = new LinkedList<Integer>();
+        stack.push(printRun.getFirst());
+        while (!stack.isEmpty()) {
+            var num = stack.pop();
+            var shouldComeAfter = applicableRules.stream()
+                                                 .filter(r -> r.first() == num)
+                                                 .map(Rule::second)
+                                                 .collect(Collectors.toSet());
+            var shouldComeBefore = applicableRules.stream()
+                                                  .filter(r -> r.second() == num)
+                                                  .map(Rule::first)
+                                                  .collect(Collectors.toSet());
+            var highestBeforeIndex = shouldComeBefore.stream()
+                                                     .filter(corrected::contains)
+                                                     .mapToInt(corrected::indexOf)
+                                                     .max()
+                                                     .orElse(-1);
+            var lowestAfterIndex = shouldComeAfter.stream()
+                                                  .filter(corrected::contains)
+                                                  .mapToInt(corrected::indexOf)
+                                                  .min()
+                                                  .orElseGet(corrected::size);
+
+            if (lowestAfterIndex <= highestBeforeIndex) {
+                throw new IllegalArgumentException("I don't think there's a correct solution to this problem");
+            }
+
+            corrected.add(highestBeforeIndex + 1, num);
+            shouldComeBefore
+                    .stream()
+                    .filter(Predicate.not(corrected::contains))
+                    .filter(Predicate.not(stack::contains))
+                    .forEach(stack::push);
+            shouldComeAfter
+                    .stream()
+                    .filter(Predicate.not(corrected::contains))
+                    .filter(Predicate.not(stack::contains))
+                    .forEach(stack::push);
+        }
+
+        return corrected;
     }
 
     public static int sumMiddlePageNumberOfCorrectPrintRuns(Set<Rule> rules, Set<List<Integer>> printRuns) {

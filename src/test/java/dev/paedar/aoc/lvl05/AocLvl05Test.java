@@ -32,4 +32,28 @@ class AocLvl05Test {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    void sumMiddlePageNumberOfCorrectedPrintRunsExample() {
+        var lines = InputReader.readLines("example_05.txt");
+        var rules = readRules(lines);
+        var printRuns = readPrintRuns(lines);
+
+        var expected = 123;
+        var actual = AocLvl05.sumMiddlePageNumberOfCorrectedPrintRuns(rules, printRuns);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void sumMiddlePageNumberOfCorrectedPrintRunsInput() {
+        var lines = InputReader.readLines("input_05.txt");
+        var rules = readRules(lines);
+        var printRuns = readPrintRuns(lines);
+
+        var expected = 4077;
+        var actual = AocLvl05.sumMiddlePageNumberOfCorrectedPrintRuns(rules, printRuns);
+
+        assertEquals(expected, actual);
+    }
 }

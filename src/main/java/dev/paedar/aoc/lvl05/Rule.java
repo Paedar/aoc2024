@@ -3,6 +3,7 @@ package dev.paedar.aoc.lvl05;
 import java.util.List;
 
 public record Rule(int first, int second) {
+
     public boolean appliesTo(List<Integer> printRun) {
         return printRun.contains(first) && printRun.contains(second);
     }
@@ -15,4 +16,5 @@ public record Rule(int first, int second) {
         }
         return firstPosition < secondPosition;
     }
+
 }
