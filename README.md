@@ -25,3 +25,6 @@ to see my 'original' solutions you're welcome to use the git history.
 In this repo, you will only find unit tests for the examples. I also test against my input files, but since the input
 files shouldn't be publicly shared, I'm not sharing these tests either. Rest assured: they look exactly the same as the
 Example tests, except with a different input file and different expected outputs.
+
+## Using my code
+Be my guest. Just know that you're both a cheater and a fraud if you don't first make your own implementation ;-)
