@@ -3,6 +3,7 @@ package dev.paedar.aoc.lvl05;
 import dev.paedar.aoc.util.InputReader;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,9 +70,11 @@ public class AocLvl05 {
             // Perform the actual swap
             var firstIndex = corrected.indexOf(violation.first());
             var secondIndex = corrected.indexOf(violation.second());
-            corrected.set(firstIndex, violation.second());
-            corrected.set(secondIndex, violation.first());
+            Collections.swap(corrected, firstIndex, secondIndex);
 
+            /*
+            We do determine all violations again repeatedly. Our swap could have violated rules that weren't violated before!
+             */
             violations = applicableRules.stream()
                                         .filter(rule -> !rule.validateOn(corrected))
                                         .toList();
