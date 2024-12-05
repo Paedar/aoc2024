@@ -3,10 +3,8 @@ package dev.paedar.aoc.lvl05;
 import dev.paedar.aoc.util.InputReader;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,45 +48,33 @@ public class AocLvl05 {
             throw new IllegalArgumentException("I don't think there's a correct solution to this problem.");
         }
 
-        var corrected = new ArrayList<Integer>();
-        var stack = new LinkedList<Integer>();
-        stack.push(printRun.getFirst());
-        while (!stack.isEmpty()) {
-            var num = stack.pop();
-            var shouldComeAfter = applicableRules.stream()
-                                                 .filter(r -> r.first() == num)
-                                                 .map(Rule::second)
-                                                 .collect(Collectors.toSet());
-            var shouldComeBefore = applicableRules.stream()
-                                                  .filter(r -> r.second() == num)
-                                                  .map(Rule::first)
-                                                  .collect(Collectors.toSet());
-            var highestBeforeIndex = shouldComeBefore.stream()
-                                                     .filter(corrected::contains)
-                                                     .mapToInt(corrected::indexOf)
-                                                     .max()
-                                                     .orElse(-1);
-            var lowestAfterIndex = shouldComeAfter.stream()
-                                                  .filter(corrected::contains)
-                                                  .mapToInt(corrected::indexOf)
-                                                  .min()
-                                                  .orElseGet(corrected::size);
+        /*
+        Algorithm:
+        Swap all numbers according to violated rules, until no rules are violated.
+        If the end result would violate any rules, it would mean there is a circular dependency in the rules and there would not be any valid solution.
+        Note: It could also be possible that the applicable rules form multiple unconnected graphs. If that were the case, there would not be a
+        uniquely definable solution to this problem either. Let's assume this is not the case.
+         */
+        var corrected = new ArrayList<>(printRun);
+        var violations = applicableRules.stream()
+                                        .filter(rule -> !rule.validateOn(corrected))
+                                        .toList();
+        while (!violations.isEmpty()) {
+            /*
+            Note: it is unclear whether or not performing the swaps of all current violations is faster than simply applying a single swap.
+            Since there can't be any cyclic rules (since that would lead to no possible solutions),
+            either way leads to eventually finding the solution
+             */
+            var violation = violations.getFirst();
+            // Perform the actual swap
+            var firstIndex = corrected.indexOf(violation.first());
+            var secondIndex = corrected.indexOf(violation.second());
+            corrected.set(firstIndex, violation.second());
+            corrected.set(secondIndex, violation.first());
 
-            if (lowestAfterIndex <= highestBeforeIndex) {
-                throw new IllegalArgumentException("I don't think there's a correct solution to this problem");
-            }
-
-            corrected.add(highestBeforeIndex + 1, num);
-            shouldComeBefore
-                    .stream()
-                    .filter(Predicate.not(corrected::contains))
-                    .filter(Predicate.not(stack::contains))
-                    .forEach(stack::push);
-            shouldComeAfter
-                    .stream()
-                    .filter(Predicate.not(corrected::contains))
-                    .filter(Predicate.not(stack::contains))
-                    .forEach(stack::push);
+            violations = applicableRules.stream()
+                                        .filter(rule -> !rule.validateOn(corrected))
+                                        .toList();
         }
 
         return corrected;
