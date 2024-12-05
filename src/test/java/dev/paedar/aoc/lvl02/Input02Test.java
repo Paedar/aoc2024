@@ -6,17 +6,8 @@ import org.junit.jupiter.api.Test;
 import static dev.paedar.aoc.lvl02.AocLvl02.toReports;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class AocLvl02Test {
+class Input02Test {
 
-    @Test
-    void countSafeReportsExample() {
-        var expected = 2;
-        var lines = InputReader.readLines("example_02.txt");
-        var levelsReport = toReports(lines);
-
-        var actual = AocLvl02.countSafeReports(levelsReport);
-        assertEquals(expected, actual);
-    }
     @Test
     void countSafeReportsInput() {
         var expected = 432;
@@ -24,16 +15,6 @@ class AocLvl02Test {
         var levelsReport = toReports(lines);
 
         var actual = AocLvl02.countSafeReports(levelsReport);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void countSafeDampenedReportsExample() {
-        var expected = 4;
-        var lines = InputReader.readLines("example_02.txt");
-        var levelsReport = toReports(lines);
-
-        var actual = AocLvl02.countSafeDampenedReports(levelsReport);
         assertEquals(expected, actual);
     }
 
@@ -46,5 +27,4 @@ class AocLvl02Test {
         var actual = AocLvl02.countSafeDampenedReports(levelsReport);
         assertEquals(expected, actual);
     }
-
 }

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AocLvl04Test {
+class Example04Test {
 
     @Test
     void countWordsExample() {
@@ -18,29 +18,10 @@ class AocLvl04Test {
     }
 
     @Test
-    void countWordsInput() {
-        var lines = InputReader.readLines("input_04.txt");
-
-        var expected = 2571;
-        var actual = AocLvl04.countWords("XMAS", lines);
-
-        assertEquals(expected, actual);
-    }
-    @Test
     void countCrossWordsExample() {
         var lines = InputReader.readLines("example_04.txt");
 
         var expected = 9;
-        var actual = AocLvl04.countCrossWords("MAS", lines);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void countCrossWordsInput() {
-        var lines = InputReader.readLines("input_04.txt");
-
-        var expected = 1992;
         var actual = AocLvl04.countCrossWords("MAS", lines);
 
         assertEquals(expected, actual);
