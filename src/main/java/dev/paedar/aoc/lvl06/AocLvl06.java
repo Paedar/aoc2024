@@ -6,6 +6,7 @@ import dev.paedar.aoc.util.InputReader;
 import dev.paedar.aoc.util.Position;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,11 +54,10 @@ public class AocLvl06 {
         encounter it. This step isn't strictly necessary, but vastly reduces the search space.
          */
         var noNewObstructionsPath = guardWalk(gridInfo, guardState, originalObstructions);
-        var viableNewObstructions = noNewObstructionsPath.stream()
-                                                         .map(GuardState::position)
-                                                         .collect(Collectors.toUnmodifiableSet());
 
-        var viableNewObstructionSets = viableNewObstructions.stream()
+        var viableNewObstructionSets = noNewObstructionsPath.stream()
+                                                            .parallel()
+                                                            .map(GuardState::position)
                                                             .map(obstruction -> {
                                                                 var newObstructions = new HashSet<>(originalObstructions);
                                                                 newObstructions.add(obstruction);
@@ -66,6 +66,7 @@ public class AocLvl06 {
                                                             .collect(Collectors.toUnmodifiableSet());
 
         return viableNewObstructionSets.stream()
+                                       .parallel()
                                        .filter(obstructions -> guardPathLoops(gridInfo, guardState, obstructions))
                                        .count();
     }
@@ -78,7 +79,7 @@ public class AocLvl06 {
             path.add(guardState);
             guardState = guardState.next(obstructions);
         }
-        return path;
+        return Collections.unmodifiableList(path);
     }
 
     private static boolean guardPathLoops(GridInfo gridInfo, GuardState initialGuardState, Set<Position> obstructions) {
