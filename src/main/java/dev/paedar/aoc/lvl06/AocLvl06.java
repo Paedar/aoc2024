@@ -5,6 +5,7 @@ import dev.paedar.aoc.util.GridInfo;
 import dev.paedar.aoc.util.InputReader;
 import dev.paedar.aoc.util.Position;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.stream.Stream;
 
 public class AocLvl06 {
 
-    public static final char OBSTACLE = '#';
+    public static final char OBSTRUCTION = '#';
 
     public static final String GUARD_START_POSITION = "^";
 
@@ -24,52 +25,93 @@ public class AocLvl06 {
 
         var guardPathPositionCount = countGuardPathPositions(lines);
         System.out.println("Amount of positions the guard passes through: " + guardPathPositionCount);
+
+        var obstructionsLeadingToLoopingPathCount = countObstructionsLeadingToLoopingGuardPath(lines);
+        System.out.println("Amount of positions that would lead to a looping guard path: " + obstructionsLeadingToLoopingPathCount);
     }
 
     public static int countGuardPathPositions(List<String> lines) {
-        var obstacles = getObstacles(lines);
-        var guardPosition = getStartPosition(lines);
-        var guardDirection = Direction.TOP;
+        var obstructions = getObstructions(lines);
+        var guardState = getStart(lines);
         var gridInfo = GridInfo.of(lines);
 
-        var pathPositions = new HashSet<Position>();
-        while(gridInfo.inbounds(guardPosition)) {
-            pathPositions.add(guardPosition);
-            var nextPosition = guardDirection.next(guardPosition);
-            if(obstacles.contains(nextPosition)) {
-                guardDirection = guardDirection.turnClockWise90();
-            } else {
-                guardPosition = nextPosition;
-            }
-        }
+        var path = guardWalk(gridInfo, guardState, obstructions);
 
-        return pathPositions.size();
+        return path.stream()
+                   .map(GuardState::position)
+                   .collect(Collectors.toSet())
+                   .size();
     }
 
-    private static Position getStartPosition(List<String> lines) {
+    public static long countObstructionsLeadingToLoopingGuardPath(List<String> lines) {
+        var originalObstructions = getObstructions(lines);
+        var guardState = getStart(lines);
+        var gridInfo = GridInfo.of(lines);
+
+        /*
+        Any new obstruction should be on the path that the guard would walk with the original layout. If not, the guard would never
+        encounter it. This step isn't strictly necessary, but vastly reduces the search space.
+         */
+        var noNewObstructionsPath = guardWalk(gridInfo, guardState, originalObstructions);
+        var viableNewObstructions = noNewObstructionsPath.stream()
+                                                         .map(GuardState::position)
+                                                         .collect(Collectors.toUnmodifiableSet());
+
+        var viableNewObstructionSets = viableNewObstructions.stream()
+                                                            .map(obstruction -> {
+                                                                var newObstructions = new HashSet<>(originalObstructions);
+                                                                newObstructions.add(obstruction);
+                                                                return newObstructions;
+                                                            })
+                                                            .collect(Collectors.toUnmodifiableSet());
+
+        return viableNewObstructionSets.stream()
+                                       .filter(obstructions -> guardPathLoops(gridInfo, guardState, obstructions))
+                                       .count();
+    }
+
+    private static List<GuardState> guardWalk(GridInfo gridInfo, GuardState guardState, Set<Position> obstructions) {
+        var path = new ArrayList<GuardState>();
+        while (gridInfo.inbounds(guardState.position())
+                       && !path.contains(guardState) // This condition breaks the path before just a loop would happen
+        ) {
+            path.add(guardState);
+            guardState = guardState.next(obstructions);
+        }
+        return path;
+    }
+
+    private static boolean guardPathLoops(GridInfo gridInfo, GuardState initialGuardState, Set<Position> obstructions) {
+        var path = guardWalk(gridInfo, initialGuardState, obstructions);
+        var nextStep = path.getLast().next(obstructions);
+        return path.contains(nextStep);
+    }
+
+    private static GuardState getStart(List<String> lines) {
         var startLineNum = IntStream.range(0, lines.size())
-                                 .filter(lineNum -> lines.get(lineNum).contains(GUARD_START_POSITION))
-                                 .findFirst()
-                                 .orElseThrow(() -> new IllegalArgumentException("No start position found"));
+                                    .filter(lineNum -> lines.get(lineNum).contains(GUARD_START_POSITION))
+                                    .findFirst()
+                                    .orElseThrow(() -> new IllegalArgumentException("No start position found"));
         var startLine = lines.get(startLineNum);
         var horizontalPosition = startLine.indexOf(GUARD_START_POSITION);
-        return new Position(horizontalPosition, startLineNum);
+        var startPosition = new Position(horizontalPosition, startLineNum);
+        return new GuardState(startPosition, Direction.TOP);
     }
 
-    private static Set<Position> getObstacles(List<String> lines) {
+    private static Set<Position> getObstructions(List<String> lines) {
         return IntStream.range(0, lines.size())
-                        .mapToObj(lineNum -> obstaclesOnLine(lines.get(lineNum), lineNum))
+                        .mapToObj(lineNum -> obstructionsOnLine(lines.get(lineNum), lineNum))
                         .flatMap(Function.identity())
                         .collect(Collectors.toSet());
     }
 
-    private static Stream<Position> obstaclesOnLine(String line, int lineNum) {
+    private static Stream<Position> obstructionsOnLine(String line, int lineNum) {
         var skipFirst = 0;
-        var nextObstacleIndex = line.indexOf(OBSTACLE, skipFirst);
+        var nextObstructionIndex = line.indexOf(OBSTRUCTION, skipFirst);
         var streamBuilder = Stream.<Position>builder();
-        while (nextObstacleIndex != -1) {
-            streamBuilder.add(new Position(nextObstacleIndex, lineNum));
-            nextObstacleIndex = line.indexOf(OBSTACLE, nextObstacleIndex + 1);
+        while (nextObstructionIndex != -1) {
+            streamBuilder.add(new Position(nextObstructionIndex, lineNum));
+            nextObstructionIndex = line.indexOf(OBSTRUCTION, nextObstructionIndex + 1);
         }
         return streamBuilder.build();
     }
