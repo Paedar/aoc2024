@@ -55,28 +55,27 @@ public class AocLvl06 {
          */
         var noNewObstructionsPath = guardWalk(gridInfo, guardState, originalObstructions);
 
-        var viableNewObstructionSets = noNewObstructionsPath.stream()
-                                                            .parallel()
-                                                            .map(GuardState::position)
-                                                            .map(obstruction -> {
+        return noNewObstructionsPath.stream()
+                                    .parallel()
+                                    .map(GuardState::position)
+                                    .distinct()
+                                    .map(obstruction -> {
                                                                 var newObstructions = new HashSet<>(originalObstructions);
                                                                 newObstructions.add(obstruction);
                                                                 return newObstructions;
                                                             })
-                                                            .collect(Collectors.toUnmodifiableSet());
-
-        return viableNewObstructionSets.stream()
-                                       .parallel()
-                                       .filter(obstructions -> guardPathLoops(gridInfo, guardState, obstructions))
-                                       .count();
+                                    .filter(obstructions -> guardPathLoops(gridInfo, guardState, obstructions))
+                                    .count();
     }
 
     private static List<GuardState> guardWalk(GridInfo gridInfo, GuardState guardState, Set<Position> obstructions) {
         var path = new ArrayList<GuardState>();
+        var reachedStates = new HashSet<GuardState>(); // Searching in a HashSet is so much faster than in a List, that it's worth it to keep track of both
         while (gridInfo.inbounds(guardState.position())
-                       && !path.contains(guardState) // This condition breaks the path before just a loop would happen
+                       && !reachedStates.contains(guardState) // This condition breaks the path before just a loop would happen
         ) {
             path.add(guardState);
+            reachedStates.add(guardState);
             guardState = guardState.next(obstructions);
         }
         return Collections.unmodifiableList(path);
