@@ -56,7 +56,6 @@ public class AocLvl06 {
         var noNewObstructionsPath = guardWalk(gridInfo, guardState, originalObstructions);
 
         return noNewObstructionsPath.stream()
-                                    .parallel()
                                     .map(GuardState::position)
                                     .distinct()
                                     .map(obstruction -> {
