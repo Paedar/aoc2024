@@ -1,6 +1,6 @@
-package dev.paedar.aoc.lvl04;
+package dev.paedar.aoc.util;
 
-record Position(int x, int y) {
+public record Position(int x, int y) {
 
     Position topLeft() {
         return new Position(x - 1, y - 1);

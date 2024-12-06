@@ -1,8 +1,8 @@
-package dev.paedar.aoc.lvl04;
+package dev.paedar.aoc.util;
 
 import java.util.function.UnaryOperator;
 
-enum Direction {
+public enum Direction {
     TOP_LEFT(Position::topLeft, Position::bottomRight),
     TOP(Position::top, Position::bottom),
     TOP_RIGHT(Position::topRight, Position::bottomLeft),
@@ -20,11 +20,24 @@ enum Direction {
         previousOperator = previous;
     }
 
-    Position next(Position position) {
+    public Position next(Position position) {
         return nextOperator.apply(position);
     }
 
-    Position previous(Position position) {
+    public Position previous(Position position) {
         return previousOperator.apply(position);
+    }
+
+    public Direction turnClockWise90() {
+        return switch (this) {
+            case TOP_LEFT -> TOP_RIGHT;
+            case TOP -> RIGHT;
+            case TOP_RIGHT -> BOTTOM_RIGHT;
+            case LEFT -> TOP;
+            case RIGHT -> BOTTOM;
+            case BOTTOM_LEFT -> TOP_LEFT;
+            case BOTTOM -> LEFT;
+            case BOTTOM_RIGHT -> BOTTOM_LEFT;
+        };
     }
 }

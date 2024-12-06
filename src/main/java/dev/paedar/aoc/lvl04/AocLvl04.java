@@ -1,6 +1,9 @@
 package dev.paedar.aoc.lvl04;
 
+import dev.paedar.aoc.util.Direction;
+import dev.paedar.aoc.util.GridInfo;
 import dev.paedar.aoc.util.InputReader;
+import dev.paedar.aoc.util.Position;
 
 import java.util.List;
 import java.util.Map;
@@ -9,10 +12,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static dev.paedar.aoc.lvl04.Direction.BOTTOM_LEFT;
-import static dev.paedar.aoc.lvl04.Direction.BOTTOM_RIGHT;
-import static dev.paedar.aoc.lvl04.Direction.TOP_LEFT;
-import static dev.paedar.aoc.lvl04.Direction.TOP_RIGHT;
+import static dev.paedar.aoc.util.Direction.BOTTOM_LEFT;
+import static dev.paedar.aoc.util.Direction.BOTTOM_RIGHT;
+import static dev.paedar.aoc.util.Direction.TOP_LEFT;
+import static dev.paedar.aoc.util.Direction.TOP_RIGHT;
 import static java.util.function.Function.identity;
 
 public class AocLvl04 {
@@ -60,17 +63,13 @@ public class AocLvl04 {
                      .sum();
     }
 
-    private static GridInfo getGridInfo(String wordToFind, List<String> lines) {
-        var height = lines.size();
-        var width = lines.stream()
-                         .mapToInt(String::length)
-                         .max()
-                         .orElse(0);
+    private static Lvl04GridInfo getGridInfo(String wordToFind, List<String> lines) {
+        var basicGridInfo = GridInfo.of(lines);
 
-        var allPositions = allGridPositions(height, width);
+        var allPositions = allGridPositions(basicGridInfo.height(), basicGridInfo.width());
         var characterPositions = getCharacterPositions(wordToFind, lines, allPositions);
 
-        return new GridInfo(lines, characterPositions, height, width);
+        return new Lvl04GridInfo(basicGridInfo, characterPositions);
     }
 
     private static Map<Character, Set<Position>> getCharacterPositions(String wordToFind, List<String> lines, Set<Position> allPositions) {
@@ -90,13 +89,13 @@ public class AocLvl04 {
                         .collect(Collectors.toSet());
     }
 
-    private static long countWordsInDirection(String wordToFind, Direction direction, GridInfo gridInfo) {
+    private static long countWordsInDirection(String wordToFind, Direction direction, Lvl04GridInfo gridInfo) {
         var wordLength = wordToFind.length();
         var characterPositions = gridInfo.characterPositions();
         var nextPositions = characterPositions.get(wordToFind.charAt(0));
 
         return nextPositions.stream()
-                            .map(p -> wordAt(gridInfo.lines(), p, direction, wordLength))
+                            .map(p -> wordAt(gridInfo.basicGridInfo().lines(), p, direction, wordLength))
                             .filter(wordToFind::equals)
                             .count();
     }
