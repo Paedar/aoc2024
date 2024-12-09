@@ -34,4 +34,12 @@ public record Position(int x, int y) {
         return new Position(x + 1, y + 1);
     }
 
+    public Position plus(int dx, int dy) {
+        return new Position(x + dx, y + dy);
+    }
+
+    public Position minus(int dx, int dy) {
+        return plus(-dx, -dy);
+    }
+
 }

@@ -1,4 +1,4 @@
-package dev.paedar.aoc.util;
+package dev.paedar.aoc.util.gatherers;
 
 import org.junit.jupiter.api.Test;
 

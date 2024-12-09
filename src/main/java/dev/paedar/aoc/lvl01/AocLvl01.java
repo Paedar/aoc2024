@@ -1,7 +1,7 @@
 package dev.paedar.aoc.lvl01;
 
 import dev.paedar.aoc.util.InputReader;
-import dev.paedar.aoc.util.TakeNthGatherer;
+import dev.paedar.aoc.util.gatherers.TakeNthGatherer;
 
 import java.util.List;
 
