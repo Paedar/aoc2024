@@ -35,4 +35,12 @@ public class Util {
                            });
     }
 
+    public static int gcd(int a, int b) {
+        /*
+        https://en.wikipedia.org/wiki/Euclidean_algorithm
+         */
+        if(b == 0) return a;
+        return gcd(b, a % b);
+    }
+
 }

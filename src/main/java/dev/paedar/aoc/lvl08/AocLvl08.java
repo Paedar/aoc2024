@@ -21,6 +21,9 @@ public class AocLvl08 {
 
         var antiNodeLocationCount = countInboundAntiNodeLocations(lines);
         System.out.println("Number of antiNodeLocations: " + antiNodeLocationCount);
+
+        var antiNodeLocationCountAccountingForHarmonics = countInboundAntiNodeLocationsAccountingForHarmonics(lines);
+        System.out.println("Number of antiNodeLocations, accounting for harmonics: " + antiNodeLocationCountAccountingForHarmonics);
     }
 
     public static long countInboundAntiNodeLocations(List<String> lines) {
@@ -33,6 +36,18 @@ public class AocLvl08 {
                                              .flatMap(AocLvl08::interferencePositions)
                                              .distinct()
                                              .filter(gridInfo::inbounds)
+                                             .count();
+    }
+    
+    public static long countInboundAntiNodeLocationsAccountingForHarmonics(List<String> lines) {
+        var gridInfo = GridInfo.of(lines);
+        var antennaePositionsGroupedByType = getAntennaePositionsGroupedByType(lines, gridInfo);
+
+        return antennaePositionsGroupedByType.entrySet()
+                                             .stream()
+                                             .map(Map.Entry::getValue)
+                                             .flatMap(positions -> interferencePositionsAccountingForHarmonics(positions, gridInfo))
+                                             .distinct()
                                              .count();
     }
 
@@ -51,6 +66,12 @@ public class AocLvl08 {
         return positions.stream()
                         .gather(AllCombinationsGatherer.combining(InterferingAntennaePositions::new, false, false))
                         .flatMap(InterferingAntennaePositions::interferencePositions);
+    }
+
+    private static Stream<Position> interferencePositionsAccountingForHarmonics(List<Position> positions, GridInfo gridInfo) {
+        return positions.stream()
+                        .gather(AllCombinationsGatherer.combining(InterferingAntennaePositions::new, false, false))
+                        .flatMap(interferingAntennaePositions -> interferingAntennaePositions.interferencePositionsAccountingForHarmonics(gridInfo));
     }
 
 }

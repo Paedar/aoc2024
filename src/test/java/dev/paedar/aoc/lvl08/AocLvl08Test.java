@@ -17,4 +17,14 @@ class AocLvl08Test {
         assertEquals(expected, actual);
     }
 
+    @Test
+    void testCountInboundAntiNodeLocationsAccountingForHarmonicsExample() {
+        var lines = InputReader.readLines("example_08.txt");
+
+        var expected = 34;
+        var actual = AocLvl08.countInboundAntiNodeLocationsAccountingForHarmonics(lines);
+
+        assertEquals(expected, actual);
+    }
+
 }
