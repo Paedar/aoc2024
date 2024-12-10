@@ -2,6 +2,9 @@ package dev.paedar.aoc.util;
 
 import java.awt.*;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public record GridInfo(List<String> lines, int height, int width) {
 
@@ -20,6 +23,13 @@ public record GridInfo(List<String> lines, int height, int width) {
 
     public boolean outOfBounds(Position p) {
         return !inbounds(p);
+    }
+
+    public Stream<Position> allInboundsPositions() {
+        return IntStream.range(0, this.height())
+                 .mapToObj(y -> IntStream.range(0, this.width())
+                                         .mapToObj(x -> new Position(x, y)))
+                 .flatMap(Function.identity());
     }
 
 }
