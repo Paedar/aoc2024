@@ -94,7 +94,7 @@ public class AocLvl06 {
         var startLine = lines.get(startLineNum);
         var horizontalPosition = startLine.indexOf(GUARD_START_POSITION);
         var startPosition = new Position(horizontalPosition, startLineNum);
-        return new GuardState(startPosition, Direction.TOP);
+        return new GuardState(startPosition, Direction.NORTH);
     }
 
     private static Set<Position> getObstructions(List<String> lines) {

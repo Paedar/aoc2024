@@ -1,6 +1,5 @@
 package dev.paedar.aoc.lvl10;
 
-import dev.paedar.aoc.util.Direction;
 import dev.paedar.aoc.util.GridInfo;
 import dev.paedar.aoc.util.InputReader;
 import dev.paedar.aoc.util.Position;
@@ -11,6 +10,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static dev.paedar.aoc.util.Direction.cardinalDirections;
 
 public class AocLvl10 {
 
@@ -59,7 +60,7 @@ public class AocLvl10 {
         if (height == 9) {
             return Stream.of(position);
         } else {
-            return Stream.of(Direction.TOP, Direction.BOTTOM, Direction.LEFT, Direction.RIGHT)
+            return cardinalDirections()
                          .map(d -> d.next(position))
                          .filter(gridInfo::inbounds)
                          .filter(p -> heightMap.getOrDefault(p, -1) == height + 1) // Gradual ascent
@@ -75,7 +76,7 @@ public class AocLvl10 {
         if (height == 9) {
             return 1;
         } else {
-            return Stream.of(Direction.TOP, Direction.BOTTOM, Direction.LEFT, Direction.RIGHT)
+            return cardinalDirections()
                          .map(d -> d.next(position))
                          .filter(gridInfo::inbounds)
                          .filter(p -> heightMap.getOrDefault(p, -1) == height + 1) // Gradual ascent

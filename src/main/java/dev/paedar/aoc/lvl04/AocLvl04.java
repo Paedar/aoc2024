@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static dev.paedar.aoc.util.Direction.BOTTOM_LEFT;
-import static dev.paedar.aoc.util.Direction.BOTTOM_RIGHT;
-import static dev.paedar.aoc.util.Direction.TOP_LEFT;
-import static dev.paedar.aoc.util.Direction.TOP_RIGHT;
+import static dev.paedar.aoc.util.Direction.SOUTH_WEST;
+import static dev.paedar.aoc.util.Direction.SOUTH_EAST;
+import static dev.paedar.aoc.util.Direction.NORTH_WEST;
+import static dev.paedar.aoc.util.Direction.NORTH_EAST;
 import static java.util.function.Function.identity;
 
 public class AocLvl04 {
@@ -42,8 +42,8 @@ public class AocLvl04 {
 
         var pivotCharacterIndex = wordToFindLength / 2;
         var pivotCharacter = crossWordToFind.charAt(pivotCharacterIndex);
-        var diagonals = List.of(List.of(TOP_LEFT, BOTTOM_RIGHT),
-                                List.of(TOP_RIGHT, BOTTOM_LEFT));
+        var diagonals = List.of(List.of(NORTH_WEST, SOUTH_EAST),
+                                List.of(NORTH_EAST, SOUTH_WEST));
 
         var investigatePositions = gridInfo.characterPositions().get(pivotCharacter);
 

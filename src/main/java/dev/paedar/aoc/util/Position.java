@@ -2,35 +2,35 @@ package dev.paedar.aoc.util;
 
 public record Position(int x, int y) {
 
-    Position topLeft() {
+    Position northWest() {
         return new Position(x - 1, y - 1);
     }
 
-    Position top() {
+    Position north() {
         return new Position(x, y - 1);
     }
 
-    Position topRight() {
+    Position northEast() {
         return new Position(x + 1, y - 1);
     }
 
-    Position left() {
+    Position west() {
         return new Position(x - 1, y);
     }
 
-    Position right() {
+    Position east() {
         return new Position(x + 1, y);
     }
 
-    Position bottomLeft() {
+    Position southWest() {
         return new Position(x - 1, y + 1);
     }
 
-    Position bottom() {
+    Position south() {
         return new Position(x, y + 1);
     }
 
-    Position bottomRight() {
+    Position southEast() {
         return new Position(x + 1, y + 1);
     }
 

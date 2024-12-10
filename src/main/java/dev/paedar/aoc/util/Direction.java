@@ -1,16 +1,17 @@
 package dev.paedar.aoc.util;
 
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 public enum Direction {
-    TOP_LEFT(Position::topLeft, Position::bottomRight),
-    TOP(Position::top, Position::bottom),
-    TOP_RIGHT(Position::topRight, Position::bottomLeft),
-    LEFT(Position::left, Position::right),
-    RIGHT(Position::right, Position::left),
-    BOTTOM_LEFT(Position::bottomLeft, Position::topRight),
-    BOTTOM(Position::bottom, Position::top),
-    BOTTOM_RIGHT(Position::bottomRight, Position::topLeft);
+    NORTH_WEST(Position::northWest, Position::southEast),
+    NORTH(Position::north, Position::south),
+    NORTH_EAST(Position::northEast, Position::southWest),
+    WEST(Position::west, Position::east),
+    EAST(Position::east, Position::west),
+    SOUTH_WEST(Position::southWest, Position::northEast),
+    SOUTH(Position::south, Position::north),
+    SOUTH_EAST(Position::southEast, Position::northWest);
 
     private final UnaryOperator<Position> nextOperator;
     private final UnaryOperator<Position> previousOperator;
@@ -30,14 +31,18 @@ public enum Direction {
 
     public Direction turnClockWise90() {
         return switch (this) {
-            case TOP_LEFT -> TOP_RIGHT;
-            case TOP -> RIGHT;
-            case TOP_RIGHT -> BOTTOM_RIGHT;
-            case LEFT -> TOP;
-            case RIGHT -> BOTTOM;
-            case BOTTOM_LEFT -> TOP_LEFT;
-            case BOTTOM -> LEFT;
-            case BOTTOM_RIGHT -> BOTTOM_LEFT;
+            case NORTH_WEST -> NORTH_EAST;
+            case NORTH -> EAST;
+            case NORTH_EAST -> SOUTH_EAST;
+            case WEST -> NORTH;
+            case EAST -> SOUTH;
+            case SOUTH_WEST -> NORTH_WEST;
+            case SOUTH -> WEST;
+            case SOUTH_EAST -> SOUTH_WEST;
         };
+    }
+
+    public static Stream<Direction> cardinalDirections() {
+        return Stream.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
     }
 }
