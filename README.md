@@ -1,7 +1,14 @@
 # Advent of Code 2024
 
-These are my implementations of the [Advent of Code 2024](https://adventofcode.com/).
+These are my implementations of the [Advent of Code 2024](https://adventofcode.com/). It's awesome. Also, check out this video of Eric Wastl
+explaining some ins and outs of AoC:
+https://www.youtube.com/watch?v=uZ8DcbhojOw
 
+## Goals
+I'm using AoC to hone my skills as a Java developer on problems that are more algorithmic of nature than my day to day work.
+As such I try to incorporate new language features, even preview features as much as possible - sometimes even too much
+
+## Language etc
 Language: Java  
 Version: 23  
 Preview Features enabled: Yes
@@ -48,6 +55,12 @@ I briefly ventured into other methods to reduce this problem:
 * Noticing that loop detection is _still_ the bottleneck I tried simplifying loop detection. In the worst case, a single
   position can be reached 4 times by the guard: once for each direction. This gives an upper bound of `4*unobstructed_spaces`
   steps the guard can take. Applying this lead to about a 50% speed loss compared to using a `Set` to keep track of reached states.
+
+Assignment 9 was another interesting case. Once again, turns out looking up elements and manipulating them in Lists is rather
+inefficient. I didn't go back to cleaning up this solution a lot, but what you'll see is that using a different data structure
+(a couple of `Map`s in this case) can make an implementation faster by a couple of orders of magnitude. If you want to have, try
+going through my history and running the first Assignment 9, part 2 solution. I ran it for over an hour after convincing myself
+it was correct through unit tests and it didn't finish in that time. The final solution I have finishes in just under 2 seconds.
 
 ## Using my code
 Be my guest. Just know that you're both a cheater and a fraud if you don't first make your own implementation ;-)
