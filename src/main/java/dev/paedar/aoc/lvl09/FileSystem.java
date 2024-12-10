@@ -3,8 +3,9 @@ package dev.paedar.aoc.lvl09;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
 public class FileSystem {
 
@@ -50,11 +51,11 @@ public class FileSystem {
 
     public long checksum() {
         return IntStream.range(0, blocks.size())
-                         .mapToLong(i -> switch (blocks.get(i)) {
+                        .mapToLong(i -> switch (blocks.get(i)) {
                             case FileBlock(int fileIndex) -> (long) fileIndex * i;
                             case EmptyBlock _ -> 0;
                         })
-                         .sum();
+                        .sum();
     }
 
     private int firstEmptyBlockIndex() {
@@ -71,6 +72,60 @@ public class FileSystem {
                                             .filter(i -> reversedBlocks.get(i) instanceof FileBlock)
                                             .findFirst()
                                             .orElseThrow(() -> new IllegalStateException("No fileblock found"));
+    }
+
+    public void compactNoDefrag() {
+        var fileIdsDecreasing = blocks.stream()
+                                      .filter(FileBlock.class::isInstance)
+                                      .map(FileBlock.class::cast)
+                                      .map(FileBlock::id)
+                                      .distinct()
+                                      .sorted()
+                                      .toList()
+                                      .reversed();
+
+        fileIdsDecreasing.forEach(this::moveAsFarLeftAsPossible);
+    }
+
+    private void moveAsFarLeftAsPossible(int fileId) {
+        var fileSize = (int) blocks.stream()
+                                   .filter(i -> i instanceof FileBlock(int id) && id == fileId)
+                                   .count();
+        var fileStart = blocks.indexOf(new FileBlock(fileId));
+
+        var leftMostEmptySpanOfSizeIndex = findFirstEmptySpan(fileSize);
+        leftMostEmptySpanOfSizeIndex.ifPresent(start -> {
+            if(start < fileStart)
+                swapEmptySpanAndFileWithId(start, fileStart, fileSize);
+        });
+    }
+
+    private void swapEmptySpanAndFileWithId(int start, int fileStart, int fileSize) {
+        for (int i = 0; i < fileSize; i++) {
+            Collections.swap(blocks, start + i, fileStart + i);
+        }
+    }
+
+    private OptionalInt findFirstEmptySpan(int fileSize) {
+        return IntStream.range(0, blocks.size())
+                        .filter(index -> isStartOfEmptySpanWithMinimumSize(index, fileSize))
+                        .findFirst();
+    }
+
+    private boolean isStartOfEmptySpanWithMinimumSize(int index, int fileSize) {
+        return fileSize <= blocks.stream()
+                                 .skip(index)
+                                 .takeWhile(EmptyBlock.class::isInstance)
+                                 .count();
+    }
+
+    public String blockRepresentation() {
+        return blocks.stream()
+                       .map(b -> switch(b) {
+                           case EmptyBlock _ -> ".";
+                           case FileBlock(int id) -> Integer.toString(id);
+                       })
+                       .collect(Collectors.joining());
     }
 
 }

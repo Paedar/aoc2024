@@ -9,11 +9,21 @@ public class AocLvl09 {
 
         var checksum = compactedFileSystemChecksum(content);
         System.out.println("Checksum after compacting" + checksum);
+
+        checksum = noDefragCompactedFileSystemChecksum(content);
+        System.out.println("Checksum after compacting" + checksum);
     }
 
     public static long compactedFileSystemChecksum(String content) {
         var fileSystem = FileSystem.ofDiskmap(content);
         fileSystem.compact();
+        return fileSystem.checksum();
+    }
+
+
+    public static long noDefragCompactedFileSystemChecksum(String content) {
+        var fileSystem = FileSystem.ofDiskmap(content);
+        fileSystem.compactNoDefrag();
         return fileSystem.checksum();
     }
 

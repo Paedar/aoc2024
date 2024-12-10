@@ -18,4 +18,14 @@ class AocLvl09Test {
         assertEquals(expected, actual);
     }
 
+    @Test
+    void testNoDefragCompactedFileSystemChecksumExample() {
+        var content = InputReader.readContent("example_09.txt");
+
+        var expected = 2858;
+        var actual = AocLvl09.noDefragCompactedFileSystemChecksum(content);
+
+        assertEquals(expected, actual);
+    }
+
 }
