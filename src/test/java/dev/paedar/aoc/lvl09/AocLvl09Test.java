@@ -1,6 +1,5 @@
 package dev.paedar.aoc.lvl09;
 
-import dev.paedar.aoc.lvl08.AocLvl08;
 import dev.paedar.aoc.util.InputReader;
 import org.junit.jupiter.api.Test;
 
@@ -19,11 +18,11 @@ class AocLvl09Test {
     }
 
     @Test
-    void testNoDefragCompactedFileSystemChecksumExample() {
+    void testNoFragmentationCompactedFileSystemChecksumExample() {
         var content = InputReader.readContent("example_09.txt");
 
         var expected = 2858;
-        var actual = AocLvl09.noDefragCompactedFileSystemChecksum(content);
+        var actual = AocLvl09.noFragmentationCompactedFileSystemChecksum(content);
 
         assertEquals(expected, actual);
     }

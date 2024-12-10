@@ -8,10 +8,10 @@ public class AocLvl09 {
         var content = InputReader.readContent("input_09.txt");
 
         var checksum = compactedFileSystemChecksum(content);
-        System.out.println("Checksum after compacting" + checksum);
+        System.out.println("Checksum after compacting: " + checksum);
 
-        checksum = noDefragCompactedFileSystemChecksum(content);
-        System.out.println("Checksum after compacting" + checksum);
+        checksum = noFragmentationCompactedFileSystemChecksum(content);
+        System.out.println("Checksum after compacting without fragging: " + checksum);
     }
 
     public static long compactedFileSystemChecksum(String content) {
@@ -21,7 +21,7 @@ public class AocLvl09 {
     }
 
 
-    public static long noDefragCompactedFileSystemChecksum(String content) {
+    public static long noFragmentationCompactedFileSystemChecksum(String content) {
         var fileSystem = FileSystem.ofDiskmap(content);
         fileSystem.compactNoDefrag();
         return fileSystem.checksum();
