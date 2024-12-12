@@ -24,6 +24,10 @@ public class MergingGatherer<ElementType> implements Gatherer<ElementType, Set<E
         return new MergingGatherer<>(canMerge, mergeFunction);
     }
 
+    public static <E> MergingGatherer<E> of(BinaryOperator<E> mergeFunction) {
+        return new MergingGatherer<>((_,_) -> true, mergeFunction);
+    }
+
     @Override
     public Supplier<Set<ElementType>> initializer() {
         return HashSet::new;
