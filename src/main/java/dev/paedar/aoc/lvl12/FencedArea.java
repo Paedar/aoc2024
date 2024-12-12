@@ -2,9 +2,11 @@ package dev.paedar.aoc.lvl12;
 
 import dev.paedar.aoc.util.Direction;
 import dev.paedar.aoc.util.Position;
+import dev.paedar.aoc.util.gatherers.MergingGatherer;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class FencedArea {
 
@@ -47,6 +49,10 @@ public class FencedArea {
         return area() * perimeter();
     }
 
+    public long discountFenceCost() {
+        return area() * sides();
+    }
+
     public long area() {
         return positions.size();
     }
@@ -55,6 +61,19 @@ public class FencedArea {
         return positions.stream()
                         .mapToLong(this::perimeterFor)
                         .sum();
+    }
+
+    public long sides() {
+        return positions.stream()
+                        .flatMap(this::toFences)
+                        .gather(MergingGatherer.of(Fence::canMerge, Fence::merge))
+                        .count();
+    }
+
+    public Stream<Fence> toFences(Position position) {
+        return Direction.cardinalDirections()
+                        .filter(d -> !positions.contains(d.next(position)))
+                        .map(d -> new Fence(d, Set.of(position)));
     }
 
     private long perimeterFor(Position position) {

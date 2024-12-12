@@ -42,6 +42,12 @@ public enum Direction {
         };
     }
 
+    public Stream<Direction> perpendicularDirections() {
+        var nextCw = this.turnClockWise90();
+        var nextCcw = nextCw.turnClockWise90().turnClockWise90();
+        return Stream.of(nextCw, nextCcw);
+    }
+
     public static Stream<Direction> cardinalDirections() {
         return Stream.of(Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
     }
