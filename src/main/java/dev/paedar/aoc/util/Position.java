@@ -42,4 +42,10 @@ public record Position(int x, int y) {
         return plus(-dx, -dy);
     }
 
+    public boolean neighboursD4(Position other) {
+        return Direction.cardinalDirections()
+                        .map(direction -> direction.next(this))
+                        .anyMatch(other::equals);
+    }
+
 }

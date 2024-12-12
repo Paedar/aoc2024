@@ -32,4 +32,11 @@ public record GridInfo(List<String> lines, int height, int width) {
                  .flatMap(Function.identity());
     }
 
+    public char charAt(Position p) {
+        if(outOfBounds(p)) {
+            throw new IndexOutOfBoundsException();
+        }
+        return lines.get(p.y()).charAt(p.x());
+    }
+
 }
