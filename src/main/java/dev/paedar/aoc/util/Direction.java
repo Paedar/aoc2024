@@ -21,6 +21,16 @@ public enum Direction {
         previousOperator = previous;
     }
 
+    public static Direction ofCharacter(int character) {
+        return switch(character) {
+            case '^' -> NORTH;
+            case 'v' -> SOUTH;
+            case '<' -> WEST;
+            case '>' -> EAST;
+            default -> throw new IllegalArgumentException("Invalid direction: " + character);
+        };
+    }
+
     public Position next(Position position) {
         return nextOperator.apply(position);
     }
