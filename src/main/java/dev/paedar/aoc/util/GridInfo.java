@@ -17,6 +17,10 @@ public record GridInfo(List<String> lines, int height, int width) {
         return new GridInfo(lines, height, width);
     }
 
+    public GridInfo(int height, int width) {
+        this(List.of(), height, width);
+    }
+
     public boolean inbounds(Position p) {
         return p.x() >= 0 && p.x() < width && p.y() >= 0 && p.y() < height;
     }
