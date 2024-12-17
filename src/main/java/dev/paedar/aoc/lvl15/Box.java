@@ -1,4 +1,5 @@
 package dev.paedar.aoc.lvl15;
 
-public final class Box implements Movable {
+public sealed interface Box extends Movable permits LeftPartOfBox, RightPartOfBox, SingleSizeBox {
+
 }
