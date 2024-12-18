@@ -26,5 +26,24 @@ class AocLvl16Test {
 
         assertEquals(expected, actual);
     }
+    @Test
+    void countPositionsAlongCheapestPathsExampleA() {
+        var lines = InputReader.readLines("example_16a.txt");
+
+        var actual = AocLvl16.countPositionsAlongCheapestPaths(lines);
+        var expected = 45L;
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void countPositionsAlongCheapestPathsExampleB() {
+        var lines = InputReader.readLines("example_16b.txt");
+
+        var actual = AocLvl16.countPositionsAlongCheapestPaths(lines);
+        var expected = 64L;
+
+        assertEquals(expected, actual);
+    }
 
 }
