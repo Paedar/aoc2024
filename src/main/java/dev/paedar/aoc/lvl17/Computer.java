@@ -4,7 +4,6 @@ import dev.paedar.aoc.lvl17.opcode.OpCode;
 import dev.paedar.aoc.util.Util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -13,6 +12,8 @@ import static java.util.function.Predicate.not;
 
 public class Computer {
 
+    public static final Predicate<Computer> LAST_OUTPUT_DOES_NOT_MATCH_SAME_PROGRAM_INDEX = not(Computer::lastOutputMatchesSameProgramIndex);
+
     private int registerA;
 
     private int registerB;
@@ -20,6 +21,8 @@ public class Computer {
     private int registerC;
 
     private final List<Integer> program;
+
+    private final int programSize;
 
     private int pointer;
 
@@ -33,13 +36,14 @@ public class Computer {
 
     private boolean outputIsDirty;
 
-    private Computer(int registerA, int registerB, int registerC, List<Integer> program) {
+    private Computer(int registerA, int registerB, int registerC, List<Integer> program, int programSize) {
         this.registerA = registerA;
         this.registerB = registerB;
         this.registerC = registerC;
-        this.program = Collections.unmodifiableList(program);
+        this.program = program;
+        this.programSize = programSize;
         this.pointer = 0;
-        this.output = new ArrayList<>(program.size());
+        this.output = new ArrayList<>();
 
         this.originalA = registerA;
         this.originalB = registerB;
@@ -54,7 +58,7 @@ public class Computer {
         var registerC = readRegisterValue(lines.get(2));
 
         var program = readProgram(lines.get(4));
-        return new Computer(registerA, registerB, registerC, program);
+        return new Computer(registerA, registerB, registerC, new ArrayList<>(program), program.size());
     }
 
     private static int readRegisterValue(String line) {
@@ -72,15 +76,20 @@ public class Computer {
         /*
         Apply early exit for the speeds
          */
-        return executeProgram(not(Computer::programStartsWithOutput));
+        return executeProgram(LAST_OUTPUT_DOES_NOT_MATCH_SAME_PROGRAM_INDEX);
     }
 
-    private boolean programStartsWithOutput() {
-        if (!outputIsDirty) {
+    private boolean lastOutputMatchesSameProgramIndex() {
+        if (outputIsDirty) {
+            var outputSize = output.size();
+            return !(outputSize > programSize || !unsafeLastOutputMatchesSameProgramIndex(outputSize));
+        } else {
             return true;
         }
-        var outputSize = output.size();
-        return outputSize <= program.size() && Objects.equals(program.get(outputSize - 1), output.getLast());
+    }
+
+    private boolean unsafeLastOutputMatchesSameProgramIndex(int outputSize) {
+        return program.get(outputSize - 1).intValue() == output.getLast().intValue();
     }
 
     private List<Integer> executeProgram(Predicate<Computer> additionalBreakingCondition) {
@@ -99,10 +108,16 @@ public class Computer {
         It is the responsibility of the caller to ensure the program isn't already finished.
         The only caller is the computer itself, so it's a safe assumption.
          */
-        var opCode = OpCode.of(program.get(pointer));
-        advance();
+        var opCodeInt = readNextAndAdvance();
+        var opCode = OpCode.of(opCodeInt);
         outputIsDirty = false;
         opCode.execute(this);
+    }
+
+    private Integer readNextAndAdvance() {
+        var nextValue = program.get(pointer);
+        advance();
+        return nextValue;
     }
 
     public void reset() {
@@ -116,7 +131,7 @@ public class Computer {
     }
 
     public void advance() {
-        pointer++;
+        ++pointer;
     }
 
     public void jump(int to) {
@@ -124,7 +139,8 @@ public class Computer {
     }
 
     public int readCombo() {
-        var value = switch (program.get(pointer)) {
+        var operand = readNextAndAdvance();
+        return switch (operand) {
             case 0 -> 0;
             case 1 -> 1;
             case 2 -> 2;
@@ -135,14 +151,10 @@ public class Computer {
             case 7 -> throw new IllegalStateException("Combo value 7 is reserved!");
             default -> throw new IllegalStateException("Combo value is out of range!");
         };
-        advance();
-        return value;
     }
 
     public int readLiteral() {
-        var value = program.get(pointer);
-        advance();
-        return value;
+        return readNextAndAdvance();
     }
 
     public void output(int out) {
@@ -151,7 +163,7 @@ public class Computer {
     }
 
     public boolean isFinished() {
-        return pointer >= program.size();
+        return pointer >= programSize;
     }
 
     public int getRegisterA() {
@@ -178,12 +190,12 @@ public class Computer {
         this.registerC = registerC;
     }
 
-    public List<Integer> getProgram() {
-        return program;
+    public List<Integer> getProgramCopy() {
+        return new ArrayList<>(program);
     }
 
     public Computer freshComputer() {
-        return new Computer(originalA, originalB, originalC, program);
+        return new Computer(originalA, originalB, originalC, program, programSize);
     }
 
 }

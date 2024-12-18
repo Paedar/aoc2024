@@ -29,10 +29,10 @@ public class AocLvl17 {
 
     public static int findLowestRegistryAValueToSelfReplicate(List<String> lines) {
         var computer = Computer.ofInput(lines);
-        var program = computer.getProgram();
+        var program = computer.getProgramCopy();
 
         return IntStream.range(0, Integer.MAX_VALUE)
-                        .parallel()
+//                        .parallel()
                         .filter(i -> {
                             var localComputer = computer.freshComputer();
                             localComputer.setRegisterA(i);

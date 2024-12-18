@@ -12,4 +12,5 @@ public abstract sealed class Divider extends ComboConsumer permits ADV, BDV, CDV
         var result = numerator >> compoOperand; /* bitshifting b to the right is the same as dividing by 2^b */
         storeResult(result, computer);
     }
+
 }
