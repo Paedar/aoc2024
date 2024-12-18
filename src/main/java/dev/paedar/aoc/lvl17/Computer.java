@@ -7,11 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static java.util.function.Predicate.not;
-
 public class Computer {
-
-    public static final Predicate<Computer> LAST_OUTPUT_DOES_NOT_MATCH_SAME_PROGRAM_INDEX = not(Computer::lastOutputMatchesSameProgramIndex);
 
     private long registerA;
 
@@ -33,8 +29,6 @@ public class Computer {
 
     private final long originalC;
 
-    private boolean outputIsDirty;
-
     private Computer(long registerA, long registerB, long registerC, List<Integer> program, int programSize) {
         this.registerA = registerA;
         this.registerB = registerB;
@@ -47,8 +41,6 @@ public class Computer {
         this.originalA = registerA;
         this.originalB = registerB;
         this.originalC = registerC;
-
-        this.outputIsDirty = false;
     }
 
     public static Computer ofInput(List<String> lines) {
@@ -71,35 +63,12 @@ public class Computer {
                    .toList();
     }
 
-    public List<Integer> executeExpectingSelfReplication() {
-        /*
-        Apply early exit for the speeds
-         */
-        return executeProgram(LAST_OUTPUT_DOES_NOT_MATCH_SAME_PROGRAM_INDEX);
-    }
-
-    private boolean lastOutputMatchesSameProgramIndex() {
-        if (outputIsDirty) {
-            var outputSize = output.size();
-            return !(outputSize > programSize || !unsafeLastOutputMatchesSameProgramIndex(outputSize));
-        } else {
-            return true;
-        }
-    }
-
-    private boolean unsafeLastOutputMatchesSameProgramIndex(int outputSize) {
-        return program.get(outputSize - 1).intValue() == output.getLast().intValue();
-    }
-
-    private List<Integer> executeProgram(Predicate<Computer> additionalBreakingCondition) {
-        while (!isFinished() && !additionalBreakingCondition.test(this)) {
+    public List<Integer> executeProgram() {
+        while (!isFinished()) {
+            ((Predicate<Computer>) _ -> false).test(this);
             executeInstruction();
         }
         return output;
-    }
-
-    public List<Integer> executeProgram() {
-        return executeProgram(_ -> false);
     }
 
     private void executeInstruction() {
@@ -109,7 +78,6 @@ public class Computer {
          */
         var opCodeInt = readNextAndAdvance();
         var opCode = OpCode.of(opCodeInt);
-        outputIsDirty = false;
         opCode.execute(this);
     }
 
@@ -152,7 +120,6 @@ public class Computer {
 
     public void output(int out) {
         output.add(out);
-        outputIsDirty = true;
     }
 
     public boolean isFinished() {
