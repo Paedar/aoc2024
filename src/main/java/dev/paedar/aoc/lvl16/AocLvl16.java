@@ -4,6 +4,8 @@ import dev.paedar.aoc.util.GridInfo;
 import dev.paedar.aoc.util.InputReader;
 import dev.paedar.aoc.util.Position;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,7 +59,7 @@ public class AocLvl16 {
 
         var reversePath = new HashMap<SearchNode, SearchNode>();
         var foundStates = new HashSet<ReindeerState>();
-        var investigationQueue = new HashSet<SearchNode>();
+        var investigationQueue = new ArrayList<SearchNode>(gridInfo.width() * gridInfo.height());
         investigationQueue.add(startState);
 
         foundStates.add(startState.reindeerState());
@@ -81,15 +83,14 @@ public class AocLvl16 {
         return previous.cost();
     }
 
-    private static boolean cheaperPathInQueue(SearchNode searchNode, HashSet<SearchNode> investigationQueue) {
+    private static boolean cheaperPathInQueue(SearchNode searchNode, Collection<SearchNode> investigationQueue) {
         return investigationQueue.stream()
                                  .filter(sn -> sn.reindeerState().equals(searchNode.reindeerState()))
                                  .anyMatch(sn -> sn.cost() <= searchNode.cost());
     }
 
     private static boolean alreadyReached(SearchNode searchNode, Set<ReindeerState> foundStates) {
-        return foundStates.stream()
-                          .anyMatch(searchNode.reindeerState()::equals);
+        return foundStates.contains(searchNode.reindeerState());
     }
 
     private static boolean canWalkHere(SearchNode searchNode, Set<Position> nonWallPositions) {
