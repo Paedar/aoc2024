@@ -24,6 +24,7 @@ public class AocLvl16 {
 
     public static void main(String[] args) {
         var lines = InputReader.readLines("input_16.txt");
+//        var lines = InputReader.readLines("example_16a.txt");
 
         var cheapestReindeerPathCost = calculateCheapestPathCost(lines);
         System.out.println("Cost of cheapest path: " + cheapestReindeerPathCost);
@@ -95,11 +96,11 @@ public class AocLvl16 {
         We cannot stop once we reach the finish, because it might be possible to reach the finish position from two different directions at the same cost!
         (upon inspection: this is the case in my particular input file!)
          */
-        return state.reversePaths().keySet().stream()
-                    .filter(s -> s.reindeerState().position().equals(finishPosition))
-                    .min(COMPARING_SEARCH_NODE_COST)
-                    .map(s -> s.cost() < state.previous().cost())
-                    .orElse(false); // In case the finish has not been reached
+        return finishReached(state.previous(), finishPosition) && state.reversePaths().keySet().stream()
+                                                                       .filter(s -> s.reindeerState().position().equals(finishPosition))
+                                                                       .min(COMPARING_SEARCH_NODE_COST)
+                                                                       .map(s -> s.cost() < state.previous().cost())
+                                                                       .orElse(false); // In case the finish has not been reached
     }
 
     private static Position getFinishPosition(GridInfo gridInfo) {
@@ -160,13 +161,15 @@ public class AocLvl16 {
                             .filter(s -> canWalkHere(s, nonWallPositions))
                             .filter(s -> !alreadyReached(s, foundStates) && !cheaperPathInQueue(s, investigationQueue))
                             .forEach(e -> {
-                                investigationQueue.add(e);
+                                if (!investigationQueue.contains(e)) {
+                                    investigationQueue.add(e);
+                                }
                                 var reversePathsForNextState = investigationPrevious.computeIfAbsent(e, _ -> new ArrayList<>());
                                 reversePathsForNextState.add(nextStateToVisit);
                             });
 
             var reversePathsForNextState = reversePaths.computeIfAbsent(nextStateToVisit, _ -> new ArrayList<>());
-            if(investigationPrevious.containsKey(nextStateToVisit) ) {
+            if (investigationPrevious.containsKey(nextStateToVisit)) {
                 reversePathsForNextState.addAll(investigationPrevious.get(nextStateToVisit));
             }
             foundStates.add(nextStateToVisit.reindeerState());
