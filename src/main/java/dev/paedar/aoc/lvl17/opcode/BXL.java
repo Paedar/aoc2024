@@ -7,8 +7,8 @@ public final class BXL extends LiteralConsumer {
     public static final BXL INSTANCE = new BXL();
 
     @Override
-    void execute(int literalOperand, Computer computer) {
-        var b = computer.getRegisterB();
+    void execute(long literalOperand, Computer computer) {
+        long b = computer.getRegisterB();
         computer.setRegisterB(literalOperand ^ b);
     }
 

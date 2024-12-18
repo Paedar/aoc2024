@@ -7,7 +7,7 @@ public final class ADV extends Divider {
     public static final ADV INSTANCE = new ADV();
 
     @Override
-    void storeResult(int result, Computer computer) {
+    void storeResult(long result, Computer computer) {
         computer.setRegisterA(result);
     }
 

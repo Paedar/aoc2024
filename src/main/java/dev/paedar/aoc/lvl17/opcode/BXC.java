@@ -10,10 +10,10 @@ public final class BXC implements OpCode {
     public void execute(Computer computer) {
         computer.advance(); // Legacy reasons
 
-        var b = computer.getRegisterB();
-        var c = computer.getRegisterC();
+        long b = computer.getRegisterB();
+        long c = computer.getRegisterC();
 
-        var result = b ^ c;
+        long result = b ^ c;
         computer.setRegisterB(result);
     }
 

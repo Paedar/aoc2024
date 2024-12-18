@@ -7,9 +7,9 @@ public final class JNZ extends LiteralConsumer {
     public static final JNZ INSTANCE = new JNZ();
 
     @Override
-    void execute(int literalOperand, Computer computer) {
+    void execute(long literalOperand, Computer computer) {
         if (computer.getRegisterA() != 0) {
-            computer.jump(literalOperand);
+            computer.jump((int) literalOperand);
         }
     }
 

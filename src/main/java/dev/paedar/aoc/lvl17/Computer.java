@@ -5,7 +5,6 @@ import dev.paedar.aoc.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 import static java.util.function.Predicate.not;
@@ -14,11 +13,11 @@ public class Computer {
 
     public static final Predicate<Computer> LAST_OUTPUT_DOES_NOT_MATCH_SAME_PROGRAM_INDEX = not(Computer::lastOutputMatchesSameProgramIndex);
 
-    private int registerA;
+    private long registerA;
 
-    private int registerB;
+    private long registerB;
 
-    private int registerC;
+    private long registerC;
 
     private final List<Integer> program;
 
@@ -28,15 +27,15 @@ public class Computer {
 
     private final List<Integer> output;
 
-    private final int originalA;
+    private final long originalA;
 
-    private final int originalB;
+    private final long originalB;
 
-    private final int originalC;
+    private final long originalC;
 
     private boolean outputIsDirty;
 
-    private Computer(int registerA, int registerB, int registerC, List<Integer> program, int programSize) {
+    private Computer(long registerA, long registerB, long registerC, List<Integer> program, int programSize) {
         this.registerA = registerA;
         this.registerB = registerB;
         this.registerC = registerC;
@@ -61,8 +60,8 @@ public class Computer {
         return new Computer(registerA, registerB, registerC, new ArrayList<>(program), program.size());
     }
 
-    private static int readRegisterValue(String line) {
-        return Integer.parseInt(Util.splitToTokens(line).get(2));
+    private static long readRegisterValue(String line) {
+        return Long.parseLong(Util.splitToTokens(line).get(2));
     }
 
     private static List<Integer> readProgram(String line) {
@@ -115,19 +114,13 @@ public class Computer {
     }
 
     private Integer readNextAndAdvance() {
-        var nextValue = program.get(pointer);
+        var nextValue = getNextValue();
         advance();
         return nextValue;
     }
 
-    public void reset() {
-        pointer = 0;
-        output.clear();
-        registerA = originalA;
-        registerB = originalB;
-        registerC = originalC;
-
-        outputIsDirty = false;
+    private Integer getNextValue() {
+        return program.get(pointer);
     }
 
     public void advance() {
@@ -138,7 +131,7 @@ public class Computer {
         pointer = to;
     }
 
-    public int readCombo() {
+    public long readCombo() {
         var operand = readNextAndAdvance();
         return switch (operand) {
             case 0 -> 0;
@@ -166,27 +159,27 @@ public class Computer {
         return pointer >= programSize;
     }
 
-    public int getRegisterA() {
+    public long getRegisterA() {
         return registerA;
     }
 
-    public int getRegisterB() {
+    public long getRegisterB() {
         return registerB;
     }
 
-    public int getRegisterC() {
+    public long getRegisterC() {
         return registerC;
     }
 
-    public void setRegisterA(int registerA) {
+    public void setRegisterA(long registerA) {
         this.registerA = registerA;
     }
 
-    public void setRegisterB(int registerB) {
+    public void setRegisterB(long registerB) {
         this.registerB = registerB;
     }
 
-    public void setRegisterC(int registerC) {
+    public void setRegisterC(long registerC) {
         this.registerC = registerC;
     }
 

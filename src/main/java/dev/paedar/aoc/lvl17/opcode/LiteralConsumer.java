@@ -4,7 +4,7 @@ import dev.paedar.aoc.lvl17.Computer;
 
 public abstract sealed class LiteralConsumer implements OpCode permits BXL, JNZ {
 
-    abstract void execute(int literalOperand, Computer computer);
+    abstract void execute(long literalOperand, Computer computer);
 
     @Override
     public void execute(Computer computer) {

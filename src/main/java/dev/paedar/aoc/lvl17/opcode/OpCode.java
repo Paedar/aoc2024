@@ -20,8 +20,8 @@ public sealed interface OpCode permits LiteralConsumer, ComboConsumer, BXC {
         };
     }
 
-    static int mod8(int compoOperand) {
-        return compoOperand & 7; /* Faster modulus calculation possible for mod(2^3) */
+    static long mod8(long operand) {
+        return operand & 7; /* Faster modulus calculation possible for mod(2^3) */
     }
 
 }
