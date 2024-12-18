@@ -6,7 +6,8 @@ public final class OUT extends ComboConsumer {
 
     @Override
     void execute(int compoOperand, Computer computer) {
-        computer.output(compoOperand % 8);
+        computer.output(OpCode.mod8(compoOperand));
     }
+
 
 }

@@ -9,8 +9,7 @@ public abstract sealed class Divider extends ComboConsumer permits ADV, BDV, CDV
     @Override
     void execute(int compoOperand, Computer computer) {
         var numerator = computer.getRegisterA();
-        var denominator = Math.pow(2, compoOperand);
-        var result = numerator / denominator;
-        storeResult((int) result, computer);
+        var result = numerator >> compoOperand; /* bitshifting b to the right is the same as dividing by 2^b */
+        storeResult(result, computer);
     }
 }

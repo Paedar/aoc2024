@@ -6,7 +6,7 @@ public final class BST extends ComboConsumer {
 
     @Override
     void execute(int compoOperand, Computer computer) {
-        computer.setRegisterB(compoOperand % 8);
+        computer.setRegisterB(OpCode.mod8(compoOperand));
     }
 
 }

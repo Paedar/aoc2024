@@ -6,7 +6,10 @@ import dev.paedar.aoc.util.Util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.function.Predicate;
+
+import static java.util.function.Predicate.not;
 
 public class Computer {
 
@@ -16,11 +19,19 @@ public class Computer {
 
     private int registerC;
 
-    private List<Integer> program;
+    private final List<Integer> program;
 
     private int pointer;
 
-    private List<Integer> output;
+    private final List<Integer> output;
+
+    private final int originalA;
+
+    private final int originalB;
+
+    private final int originalC;
+
+    private boolean outputIsDirty;
 
     private Computer(int registerA, int registerB, int registerC, List<Integer> program) {
         this.registerA = registerA;
@@ -28,7 +39,13 @@ public class Computer {
         this.registerC = registerC;
         this.program = Collections.unmodifiableList(program);
         this.pointer = 0;
-        this.output = new ArrayList<>();
+        this.output = new ArrayList<>(program.size());
+
+        this.originalA = registerA;
+        this.originalB = registerB;
+        this.originalC = registerC;
+
+        this.outputIsDirty = false;
     }
 
     public static Computer ofInput(List<String> lines) {
@@ -51,11 +68,30 @@ public class Computer {
                    .toList();
     }
 
-    public String executeProgram() {
-        while (!isFinished()) {
+    public List<Integer> executeExpectingSelfReplication() {
+        /*
+        Apply early exit for the speeds
+         */
+        return executeProgram(not(Computer::programStartsWithOutput));
+    }
+
+    private boolean programStartsWithOutput() {
+        if (!outputIsDirty) {
+            return true;
+        }
+        var outputSize = output.size();
+        return outputSize <= program.size() && Objects.equals(program.get(outputSize - 1), output.getLast());
+    }
+
+    private List<Integer> executeProgram(Predicate<Computer> additionalBreakingCondition) {
+        while (!isFinished() && !additionalBreakingCondition.test(this)) {
             executeInstruction();
         }
-        return output.stream().map(String::valueOf).collect(Collectors.joining(","));
+        return output;
+    }
+
+    public List<Integer> executeProgram() {
+        return executeProgram(_ -> false);
     }
 
     private void executeInstruction() {
@@ -65,7 +101,18 @@ public class Computer {
          */
         var opCode = OpCode.of(program.get(pointer));
         advance();
+        outputIsDirty = false;
         opCode.execute(this);
+    }
+
+    public void reset() {
+        pointer = 0;
+        output.clear();
+        registerA = originalA;
+        registerB = originalB;
+        registerC = originalC;
+
+        outputIsDirty = false;
     }
 
     public void advance() {
@@ -100,6 +147,7 @@ public class Computer {
 
     public void output(int out) {
         output.add(out);
+        outputIsDirty = true;
     }
 
     public boolean isFinished() {
@@ -128,6 +176,14 @@ public class Computer {
 
     public void setRegisterC(int registerC) {
         this.registerC = registerC;
+    }
+
+    public List<Integer> getProgram() {
+        return program;
+    }
+
+    public Computer freshComputer() {
+        return new Computer(originalA, originalB, originalC, program);
     }
 
 }
