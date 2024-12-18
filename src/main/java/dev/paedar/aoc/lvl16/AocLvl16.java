@@ -56,10 +56,12 @@ public class AocLvl16 {
          */
 
         var reversePath = new HashMap<SearchNode, SearchNode>();
+        var foundStates = new HashSet<ReindeerState>();
         var investigationQueue = new HashSet<SearchNode>();
         investigationQueue.add(startState);
 
-        SearchNode previous = startState;
+        foundStates.add(startState.reindeerState());
+        var previous = startState;
 
         while (!finishReached(previous, finishPosition)) {
             var nextStateToVisit = investigationQueue.stream()
@@ -67,12 +69,12 @@ public class AocLvl16 {
                                                      .orElseThrow(() -> new IllegalStateException("No path to finish found!"));
 
             investigationQueue.remove(nextStateToVisit);
-            var newSearchNodes = nextStateToVisit.nextPossibleStates()
-                                                 .filter(s -> canWalkHere(s, nonWallPositions))
-                                                 .filter(s -> !alreadyReached(s, reversePath.keySet()) && !cheaperPathInQueue(s, investigationQueue))
-                                                 .collect(Collectors.toSet());
-            investigationQueue.addAll(newSearchNodes);
+            nextStateToVisit.nextPossibleStates()
+                            .filter(s -> canWalkHere(s, nonWallPositions))
+                            .filter(s -> !alreadyReached(s, foundStates) && !cheaperPathInQueue(s, investigationQueue))
+                            .forEach(investigationQueue::add);
             reversePath.put(nextStateToVisit, previous);
+            foundStates.add(nextStateToVisit.reindeerState());
             previous = nextStateToVisit;
         }
 
@@ -85,10 +87,9 @@ public class AocLvl16 {
                                  .anyMatch(sn -> sn.cost() <= searchNode.cost());
     }
 
-    private static boolean alreadyReached(SearchNode searchNode, Set<SearchNode> foundStates) {
+    private static boolean alreadyReached(SearchNode searchNode, Set<ReindeerState> foundStates) {
         return foundStates.stream()
-                          .map(SearchNode::reindeerState)
-                          .anyMatch(r -> r.equals(searchNode.reindeerState()));
+                          .anyMatch(searchNode.reindeerState()::equals);
     }
 
     private static boolean canWalkHere(SearchNode searchNode, Set<Position> nonWallPositions) {
