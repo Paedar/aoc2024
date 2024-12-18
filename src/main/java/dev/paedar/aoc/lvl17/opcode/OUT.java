@@ -7,8 +7,10 @@ public final class OUT extends ComboConsumer {
     public static final OUT INSTANCE = new OUT();
 
     @Override
-    void execute(long compoOperand, Computer computer) {
-        computer.output((int) OpCode.mod8(compoOperand));
+    void execute(long comboOperand, Computer computer) {
+        var out = (int) OpCode.mod8(comboOperand);
+        // System.out.println("OUT " + comboOperand + " -> " + out);
+        computer.output(out);
     }
 
 }

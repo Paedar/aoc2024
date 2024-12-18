@@ -8,6 +8,7 @@ public final class BDV extends Divider {
 
     @Override
     void storeResult(long result, Computer computer) {
+        // System.out.print("BDV B="+result);
         computer.setRegisterB(result);
     }
 

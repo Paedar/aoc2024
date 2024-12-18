@@ -14,6 +14,8 @@ public final class BXC implements OpCode {
         long c = computer.getRegisterC();
 
         long result = b ^ c;
+
+        // System.out.println("BXC B = b(%d) ^ c(%d) = %d".formatted(b, c, result));
         computer.setRegisterB(result);
     }
 

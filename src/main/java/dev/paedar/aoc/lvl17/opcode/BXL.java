@@ -9,7 +9,10 @@ public final class BXL extends LiteralConsumer {
     @Override
     void execute(long literalOperand, Computer computer) {
         long b = computer.getRegisterB();
-        computer.setRegisterB(literalOperand ^ b);
+
+        var result = literalOperand ^ b;
+        // System.out.println("BXL B = b(%d) ^ l(%d) = %d".formatted(b, literalOperand, result));
+        computer.setRegisterB(result);
     }
 
 }

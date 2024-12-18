@@ -8,8 +8,12 @@ public final class JNZ extends LiteralConsumer {
 
     @Override
     void execute(long literalOperand, Computer computer) {
+        // System.out.print("JNZ ");
         if (computer.getRegisterA() != 0) {
+            // System.out.println(literalOperand);
             computer.jump((int) literalOperand);
+        } else {
+            // System.out.println("A==0");
         }
     }
 

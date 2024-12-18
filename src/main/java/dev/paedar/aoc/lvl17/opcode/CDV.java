@@ -8,6 +8,7 @@ public final class CDV extends Divider {
 
     @Override
     void storeResult(long result, Computer computer) {
+        // System.out.print("CDV C="+result);
         computer.setRegisterC(result);
     }
 

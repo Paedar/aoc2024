@@ -8,6 +8,7 @@ public final class ADV extends Divider {
 
     @Override
     void storeResult(long result, Computer computer) {
+        // System.out.print("ADV A="+result);
         computer.setRegisterA(result);
     }
 

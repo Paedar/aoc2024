@@ -7,8 +7,10 @@ public final class BST extends ComboConsumer {
     public static final BST INSTANCE = new BST();
 
     @Override
-    void execute(long compoOperand, Computer computer) {
-        computer.setRegisterB(OpCode.mod8(compoOperand));
+    void execute(long comboOperand, Computer computer) {
+        var value = OpCode.mod8(comboOperand);
+        // System.out.println("BST %d B=%d".formatted(comboOperand,value));
+        computer.setRegisterB(value);
     }
 
 }
