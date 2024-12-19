@@ -105,14 +105,26 @@ public class AocLvl18 {
 
             lastSearchWasBlocked = pathLengthToEnd == NO_PATH_FOUND;
             if(lastSearchWasBlocked) {
-                max = searchIndex - 1; /* No path was found, shift the upper bound down */
+                /*
+                No path was found, shift the upper bound down
+                Since searchIndex could be the first occurence that blocks the path, do not move the bound below searchIndex
+                */
+                max = searchIndex;
             } else {
-                min = searchIndex + 1; /* A path was found, shift the lower bound up */
+                /*
+                A path was found, shift the lower bound up
+                Since searchIndex could can not possibly be the first occurence that blocks the path, move one additional step further up.
+                Additionally, this prevents a looping situation where max == min + 1
+                */
+                min = searchIndex + 1;
             }
         }
 
-        var correction = lastSearchWasBlocked ? 0 : -1;
-        var theOneThatBlockedItAll = fallingBlockPositions.get(min + correction);
+        /*
+        A correction is necessary, because the subList call on fallingBlockPositions has an inclusive, exclusive range. Thus, searchIndex, as wel
+        as the resulting min value, is always 1 index further than the last included obstruction
+         */
+        var theOneThatBlockedItAll = fallingBlockPositions.get(min - 1);
 
         return "%s,%s".formatted(theOneThatBlockedItAll.x(), theOneThatBlockedItAll.y());
     }
