@@ -17,4 +17,14 @@ class AocLvl18Test {
         assertEquals(expected, actual);
     }
 
+    @Test
+    void firstBlockingByteExample() {
+        var tokens = InputReader.readTokens("example_18.txt");
+
+        var actual = AocLvl18.firstBlockingByte(tokens, 7, 7);
+        var expected = "6,1";
+
+        assertEquals(expected, actual);
+    }
+
 }

@@ -13,21 +13,27 @@ import java.util.stream.Gatherers;
 
 public class AocLvl18 {
 
+    public static final long NO_PATH_FOUND = -1L;
+
     public static void main(String[] args) {
         var tokens = InputReader.readTokens("input_18.txt");
 
         var pathLength = pathLengthToExit(tokens, 71, 71, 1024);
         System.out.println("Found a path of length: " + pathLength);
+
+        var blockingByte = firstBlockingByte(tokens, 71, 71);
+        System.out.println("First byte that would block the path: " + blockingByte);
     }
 
     public static long pathLengthToExit(List<String> tokens, int width, int height, int numMemoryBlocks) {
-        var fallingBlockPositions = tokens.stream()
-                                          .map(Integer::parseInt)
-                                          .gather(Gatherers.windowFixed(2))
-                                          .map(w -> new Position(w.getFirst(), w.getLast()))
-                                          .toList();
+        var fallingBlockPositions = readFallingBlockPositions(tokens);
+        var obstructions = fallingBlockPositions.subList(0, numMemoryBlocks);
 
-        var gridInfo = simulateFallingBlocks(fallingBlockPositions, width, height, numMemoryBlocks);
+        return findPathLengthThroughObstructions(obstructions, width, height);
+    }
+
+    private static Long findPathLengthThroughObstructions(List<Position> obstructions, int width, int height) {
+        var gridInfo = simulateFallingBlocks(obstructions, width, height);
 
         /*
         Dijkstra's again?!
@@ -57,15 +63,21 @@ public class AocLvl18 {
                      .forEach(p -> investigationQueue.put(p, nextCost));
         }
 
-        return costToReach.get(end);
+        return costToReach.getOrDefault(end, NO_PATH_FOUND);
     }
 
-    private static GridInfo simulateFallingBlocks(List<Position> fallingBlockPositions, int width, int height, int numMemoryBlocks) {
-        var firstN = fallingBlockPositions.subList(0, numMemoryBlocks);
+    private static List<Position> readFallingBlockPositions(List<String> tokens) {
+        return tokens.stream()
+                     .map(Integer::parseInt)
+                     .gather(Gatherers.windowFixed(2))
+                     .map(w -> new Position(w.getFirst(), w.getLast()))
+                     .toList();
+    }
 
+    private static GridInfo simulateFallingBlocks(List<Position> fallingBlockPositions, int width, int height) {
         var gridInfo = new GridInfo(height, width);
         gridInfo.allInboundsPositions().forEach(p -> {
-            if (firstN.contains(p)) {
+            if (fallingBlockPositions.contains(p)) {
                 gridInfo.putAt(p, '#');
             } else {
                 gridInfo.putAt(p, '.');
@@ -73,6 +85,36 @@ public class AocLvl18 {
         });
 
         return gridInfo;
+    }
+
+    public static String firstBlockingByte(List<String> tokens, int width, int height) {
+        var fallingBlockPositions = readFallingBlockPositions(tokens);
+
+        /*
+        Binary search for the lowest first byte that results in an unsolvable maze
+         */
+
+        var min = 0;
+        var max = tokens.size() / 2;
+        var lastSearchWasBlocked = true;
+        while (min < max) {
+            var searchIndex = (min + max) / 2;
+
+            var obstructions = fallingBlockPositions.subList(0, searchIndex);
+            var pathLengthToEnd = findPathLengthThroughObstructions(obstructions, width, height);
+
+            lastSearchWasBlocked = pathLengthToEnd == NO_PATH_FOUND;
+            if(lastSearchWasBlocked) {
+                max = searchIndex - 1; /* No path was found, shift the upper bound down */
+            } else {
+                min = searchIndex + 1; /* A path was found, shift the lower bound up */
+            }
+        }
+
+        var correction = lastSearchWasBlocked ? 0 : -1;
+        var theOneThatBlockedItAll = fallingBlockPositions.get(min + correction);
+
+        return "%s,%s".formatted(theOneThatBlockedItAll.x(), theOneThatBlockedItAll.y());
     }
 
 }
