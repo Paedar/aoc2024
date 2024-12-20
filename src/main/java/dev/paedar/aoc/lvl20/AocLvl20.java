@@ -16,8 +16,6 @@ import static java.util.function.Predicate.not;
 
 public class AocLvl20 {
 
-    private static final Long NO_PATH_FOUND = -1L;
-
     public static void main(String[] args) {
         var lines = InputReader.readLines("input_20.txt");
 
@@ -36,12 +34,13 @@ public class AocLvl20 {
                           .findFirst()
                           .orElseThrow(() -> new IllegalStateException("No end position found."));
 
-        var exploredMap = exploreFullMap(gridInfo, start);
-        var timeToFinish = Optional.of(exploredMap)
+        var exploredMapFromStart = exploreFullMap(gridInfo, start);
+        var exploredMapFromEnd = exploreFullMap(gridInfo, end);
+        var timeToFinish = Optional.of(exploredMapFromStart)
                                    .map(m -> m.get(end))
                                    .orElseThrow(() -> new IllegalStateException("No path to finish found."));
 
-        var cheatStarts = exploredMap.keySet().stream()
+        var cheatStarts = exploredMapFromStart.keySet().stream()
                                      .filter(p -> gridInfo.charAt(p) == '#')
                                      .collect(Collectors.toSet());
 
@@ -52,21 +51,20 @@ public class AocLvl20 {
         var cheats = cheatStarts.stream()
                                 .flatMap(cheatStart -> possibleCheatEnds.stream()
                                                                         .filter(cheatEnd -> cheatStart.manhattanDistance(cheatEnd) < maxCheatDuration)
-                                                                        .map(cheatEnd -> new Cheat(cheatStart, cheatEnd, exploredMap.get(cheatStart), cheatStart.manhattanDistance(cheatEnd)))
+                                                                        .map(cheatEnd -> new Cheat(cheatStart, cheatEnd))
                                 )
                                 .collect(Collectors.toSet());
 
         return cheats.stream()
-                     .map(c -> findShortestPathApplyingCheat(c, gridInfo, end))
+                     .map(c -> findShortestPathApplyingCheat(c, exploredMapFromStart, exploredMapFromEnd))
                      .filter(cheatedTime -> timeToFinish - cheatedTime >= picoSeconds)
                      .count();
     }
 
-    private static long findShortestPathApplyingCheat(Cheat cheat, GridInfo gridInfo, Position end) {
-        var startToCheatPosition = cheat.startStep();
-        var cheatStartToCheatEnd = cheat.distance();
-        var cheatEndToEnd = dijkstraExplore(gridInfo, cheat.end(), notAWall(gridInfo), _ -> true, positionReached(end))
-                                    .getOrDefault(end, Long.MAX_VALUE);
+    private static long findShortestPathApplyingCheat(Cheat cheat, Map<Position, Long> exploredMapFromStart, Map<Position, Long> exploredMapFromEnd) {
+        var startToCheatPosition = exploredMapFromStart.get(cheat.start());
+        var cheatStartToCheatEnd = cheat.start().manhattanDistance(cheat.end());
+        var cheatEndToEnd = exploredMapFromEnd.get(cheat.end());
         return startToCheatPosition + cheatStartToCheatEnd + cheatEndToEnd;
     }
 
