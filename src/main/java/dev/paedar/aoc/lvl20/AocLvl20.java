@@ -19,8 +19,11 @@ public class AocLvl20 {
     public static void main(String[] args) {
         var lines = InputReader.readLines("input_20.txt");
 
-        var goodCheats = countCheatsSavingPicoSeconds(lines, 100, 2L);
-        System.out.println("Number of paths that save at least 100 picoseconds: " + goodCheats);
+//        var goodShortCheats = countCheatsSavingPicoSeconds(lines, 100, 2L);
+//        System.out.println("Number of short cheats that save at least 100 picoseconds: " + goodShortCheats);
+
+        var goodLongCheats = countCheatsSavingPicoSeconds(lines, 100, 20L);
+        System.out.println("Number of slightly longer paths that save at least 100 picoseconds: " + goodLongCheats);
     }
 
     public static long countCheatsSavingPicoSeconds(List<String> lines, long picoSeconds, long maxCheatDuration) {
@@ -41,24 +44,21 @@ public class AocLvl20 {
                                    .orElseThrow(() -> new IllegalStateException("No path to finish found."));
 
         var cheatStarts = exploredMapFromStart.keySet().stream()
-                                     .filter(p -> gridInfo.charAt(p) == '#')
-                                     .collect(Collectors.toSet());
+                                              .filter(p -> gridInfo.charAt(p) != '#')
+                                              .collect(Collectors.toSet());
 
         var possibleCheatEnds = gridInfo.allInboundsPositions()
                                         .filter(p -> gridInfo.charAt(p) != '#')
                                         .collect(Collectors.toSet());
 
-        var cheats = cheatStarts.stream()
-                                .flatMap(cheatStart -> possibleCheatEnds.stream()
-                                                                        .filter(cheatEnd -> cheatStart.manhattanDistance(cheatEnd) < maxCheatDuration)
-                                                                        .map(cheatEnd -> new Cheat(cheatStart, cheatEnd))
-                                )
-                                .collect(Collectors.toSet());
-
-        return cheats.stream()
-                     .map(c -> findShortestPathApplyingCheat(c, exploredMapFromStart, exploredMapFromEnd))
-                     .filter(cheatedTime -> timeToFinish - cheatedTime >= picoSeconds)
-                     .count();
+        return cheatStarts.stream()
+                          .flatMap(cheatStart -> possibleCheatEnds.stream()
+                                                                  .filter(cheatEnd -> cheatStart.manhattanDistance(cheatEnd) <= maxCheatDuration)
+                                                                  .map(cheatEnd -> new Cheat(cheatStart, cheatEnd))
+                          )
+                          .map(c -> findShortestPathApplyingCheat(c, exploredMapFromStart, exploredMapFromEnd))
+                          .filter(cheatedTime -> timeToFinish - cheatedTime >= picoSeconds)
+                          .count();
     }
 
     private static long findShortestPathApplyingCheat(Cheat cheat, Map<Position, Long> exploredMapFromStart, Map<Position, Long> exploredMapFromEnd) {

@@ -17,4 +17,14 @@ class AocLvl20Test {
         assertEquals(expected, actual);
     }
 
+    @Test
+    void countCheatsSavingPicoSecondsWithLongerCheats() {
+        var lines = InputReader.readLines("example_20.txt");
+
+        var actual = AocLvl20.countCheatsSavingPicoSeconds(lines, 50, 20L);
+        var expected = 285L;
+
+        assertEquals(expected, actual);
+    }
+
 }
