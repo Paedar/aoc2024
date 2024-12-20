@@ -64,10 +64,6 @@ public class AocLvl20 {
         return startToCheatPosition + cheatStartToCheatEnd + cheatEndToEnd;
     }
 
-    private static Predicate<DijkstraState> positionReached(Position end) {
-        return state -> state.positionReached(end);
-    }
-
     private static Predicate<Position> notAWall(GridInfo gridInfo) {
         return p -> gridInfo.charAt(p) != '#';
     }
