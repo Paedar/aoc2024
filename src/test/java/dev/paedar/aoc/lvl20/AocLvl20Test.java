@@ -11,7 +11,7 @@ class AocLvl20Test {
     void countCheatsSavingPicoSeconds() {
         var lines = InputReader.readLines("example_20.txt");
 
-        var actual = AocLvl20.countCheatsSavingPicoSeconds(lines, 12L);
+        var actual = AocLvl20.countCheatsSavingPicoSeconds(lines, 12L, 2L);
         var expected = 8L;
 
         assertEquals(expected, actual);

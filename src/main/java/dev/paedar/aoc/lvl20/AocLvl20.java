@@ -8,10 +8,9 @@ import dev.paedar.aoc.util.Position;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.LongStream;
+import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
@@ -22,11 +21,11 @@ public class AocLvl20 {
     public static void main(String[] args) {
         var lines = InputReader.readLines("input_20.txt");
 
-        var goodCheats = countCheatsSavingPicoSeconds(lines, 100);
+        var goodCheats = countCheatsSavingPicoSeconds(lines, 100, 2L);
         System.out.println("Number of paths that save at least 100 picoseconds: " + goodCheats);
     }
 
-    public static long countCheatsSavingPicoSeconds(List<String> lines, long picoSeconds) {
+    public static long countCheatsSavingPicoSeconds(List<String> lines, long picoSeconds, long maxCheatDuration) {
         var gridInfo = GridInfo.of(lines);
         var start = gridInfo.allInboundsPositions()
                             .filter(p -> gridInfo.charAt(p) == 'S')
@@ -42,17 +41,37 @@ public class AocLvl20 {
                                    .map(m -> m.get(end))
                                    .orElseThrow(() -> new IllegalStateException("No path to finish found."));
 
-        return LongStream.range(0, timeToFinish)
-                         .boxed()
-                         .flatMap(ps -> exploredMap.keySet().stream()
-                                                   .filter(p -> Objects.equals(exploredMap.get(p), ps))
-                                                   .filter(p -> gridInfo.charAt(p) == '#')
-                                                   .map(cheatPosition -> dijkstraExplore(gridInfo, start, notAWall(gridInfo).or(cheatPosition::equals), _ -> true, state -> state.positionReached(end)))
-                         )
-                         .map(cm -> cm.getOrDefault(end, NO_PATH_FOUND))
-                         .filter(not(NO_PATH_FOUND::equals))
-                         .filter(cheatedTime -> timeToFinish - cheatedTime >= picoSeconds)
-                         .count();
+        var cheatStarts = exploredMap.keySet().stream()
+                                     .filter(p -> gridInfo.charAt(p) == '#')
+                                     .collect(Collectors.toSet());
+
+        var possibleCheatEnds = gridInfo.allInboundsPositions()
+                                        .filter(p -> gridInfo.charAt(p) != '#')
+                                        .collect(Collectors.toSet());
+
+        var cheats = cheatStarts.stream()
+                                .flatMap(cheatStart -> possibleCheatEnds.stream()
+                                                                        .filter(cheatEnd -> cheatStart.manhattanDistance(cheatEnd) < maxCheatDuration)
+                                                                        .map(cheatEnd -> new Cheat(cheatStart, cheatEnd, exploredMap.get(cheatStart), cheatStart.manhattanDistance(cheatEnd)))
+                                )
+                                .collect(Collectors.toSet());
+
+        return cheats.stream()
+                     .map(c -> findShortestPathApplyingCheat(c, gridInfo, end))
+                     .filter(cheatedTime -> timeToFinish - cheatedTime >= picoSeconds)
+                     .count();
+    }
+
+    private static long findShortestPathApplyingCheat(Cheat cheat, GridInfo gridInfo, Position end) {
+        var startToCheatPosition = cheat.startStep();
+        var cheatStartToCheatEnd = cheat.distance();
+        var cheatEndToEnd = dijkstraExplore(gridInfo, cheat.end(), notAWall(gridInfo), _ -> true, positionReached(end))
+                                    .getOrDefault(end, Long.MAX_VALUE);
+        return startToCheatPosition + cheatStartToCheatEnd + cheatEndToEnd;
+    }
+
+    private static Predicate<DijkstraState> positionReached(Position end) {
+        return state -> state.positionReached(end);
     }
 
     private static Predicate<Position> notAWall(GridInfo gridInfo) {

@@ -48,4 +48,8 @@ public record Position(int x, int y) {
                         .anyMatch(other::equals);
     }
 
+    public int manhattanDistance(Position other) {
+        return Math.abs(x - other.x) + Math.abs(y - other.y);
+    }
+
 }
